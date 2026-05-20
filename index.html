@@ -11,7 +11,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Instrument+Serif:ital@0;1&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/d3@7" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3" defer></script>
+
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230E1430%22/><text x=%2250%22 y=%2270%22 font-family=%22serif%22 font-size=%2270%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22%23FB842A%22>I</text></svg>">
+
+    <script>
+        // Detect intro skip before render to avoid flash
+        (function() {
+            try {
+                if (sessionStorage.getItem('iipgm-intro-seen') === '1' ||
+                    window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    document.documentElement.classList.add('no-intro');
+                }
+            } catch (e) { document.documentElement.classList.add('no-intro'); }
+        })();
+    </script>
 
     <style>
         :root {
@@ -767,18 +782,47 @@
 
         .faculty-card {
             position: relative;
-            background: var(--bone);
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid var(--hairline);
-            transform-style: preserve-3d;
-            transition: box-shadow 0.5s, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+            perspective: 1600px;
+            transition: box-shadow 0.5s;
             will-change: transform;
         }
-        .faculty-card.tilt-active { transition: none; }
         .faculty-card:nth-child(2) { margin-top: 40px; }
         @media (max-width: 768px) { .faculty-card:nth-child(2) { margin-top: 0; } }
         .faculty-card:hover { box-shadow: 0 40px 80px -24px rgba(14, 20, 48, 0.35); }
+
+        .faculty-inner {
+            position: relative;
+            width: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.95s cubic-bezier(0.7, 0, 0.2, 1);
+        }
+        .faculty-card.tilt-active .faculty-inner { transition: none; }
+        .faculty-card.flipped .faculty-inner { transform: rotateY(180deg); transition: transform 0.95s cubic-bezier(0.7, 0, 0.2, 1) !important; }
+
+        .faculty-front, .faculty-back {
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background: var(--bone);
+            border-radius: 24px;
+            border: 1px solid var(--hairline);
+            overflow: hidden;
+        }
+        .faculty-front { position: relative; }
+        .faculty-back {
+            position: absolute;
+            inset: 0;
+            transform: rotateY(180deg);
+            background: var(--ink);
+            color: var(--cream);
+            border-color: var(--ink-soft);
+            padding: 32px 30px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        @media (max-width: 768px) {
+            .faculty-back { padding: 28px 24px; }
+        }
 
         .fc-img-wrap {
             aspect-ratio: 4/5;
@@ -800,6 +844,176 @@
             background: linear-gradient(180deg, transparent 50%, rgba(14, 20, 48, 0.4) 100%);
             pointer-events: none;
         }
+
+        /* Flip trigger button */
+        .flip-toggle {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--saffron);
+            color: var(--ink);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4), background 0.3s;
+            z-index: 4;
+            box-shadow: 0 8px 20px -6px rgba(251, 132, 42, 0.5);
+        }
+        .flip-toggle:hover { transform: scale(1.1) rotate(90deg); background: var(--cream); }
+        .flip-toggle.back {
+            position: static;
+            background: transparent;
+            border: 1px solid rgba(244, 237, 224, 0.25);
+            color: var(--cream);
+            width: 36px; height: 36px;
+            box-shadow: none;
+            margin-left: auto;
+        }
+        .flip-toggle.back:hover { background: var(--saffron); border-color: var(--saffron); color: var(--ink); transform: scale(1.05) rotate(90deg); }
+
+        /* Back card content */
+        .fb-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .fb-eyebrow {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--saffron);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .fb-eyebrow::before {
+            content: '';
+            width: 20px; height: 1px;
+            background: var(--saffron);
+            display: inline-block;
+        }
+
+        .fb-name {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: 32px;
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+            color: var(--cream);
+            margin-bottom: 4px;
+        }
+        .fb-role {
+            font-family: var(--editorial);
+            font-style: italic;
+            font-size: 16px;
+            color: var(--saffron);
+            margin-bottom: 20px;
+        }
+        .fb-divider {
+            height: 1px;
+            background: linear-gradient(90deg, var(--saffron), transparent);
+            margin-bottom: 20px;
+        }
+        .fb-section { margin-bottom: 18px; }
+        .fb-label {
+            font-family: var(--mono);
+            font-size: 9px;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: rgba(244, 237, 224, 0.5);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .fb-section p {
+            font-size: 13px;
+            line-height: 1.55;
+            color: rgba(244, 237, 224, 0.85);
+        }
+        .fb-section ul { list-style: none; padding: 0; margin: 0; }
+        .fb-section ul li {
+            font-size: 13px;
+            line-height: 1.55;
+            color: rgba(244, 237, 224, 0.85);
+            padding-left: 16px;
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .fb-section ul li::before {
+            content: '·';
+            color: var(--saffron);
+            position: absolute;
+            left: 4px;
+            font-weight: 700;
+        }
+        .fb-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .fb-chips span {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 5px 10px;
+            border: 1px solid rgba(244, 237, 224, 0.2);
+            border-radius: 999px;
+            color: rgba(244, 237, 224, 0.85);
+        }
+        .fb-quote {
+            font-family: var(--editorial);
+            font-style: italic;
+            font-size: 16px;
+            line-height: 1.4;
+            color: var(--cream);
+            padding: 14px 0;
+            border-top: 1px solid var(--ink-soft);
+            border-bottom: 1px solid var(--ink-soft);
+            margin: 8px 0 20px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .fb-quote::before {
+            content: '"';
+            font-family: var(--display);
+            font-size: 40px;
+            color: var(--saffron);
+            position: absolute;
+            left: -4px;
+            top: 4px;
+            line-height: 0.6;
+        }
+
+        .fb-links {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 8px;
+        }
+        .fb-link {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid rgba(244, 237, 224, 0.2);
+            border-radius: 999px;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--cream);
+            transition: all 0.3s;
+        }
+        .fb-link:hover { background: var(--saffron); color: var(--ink); border-color: var(--saffron); }
         .fc-tag {
             position: absolute;
             top: 20px; left: 20px;
@@ -1174,6 +1388,475 @@
             transition: width 0.1s;
         }
 
+        /* === CINEMATIC INTRO CURTAIN === */
+        #intro-curtain {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        html.no-intro #intro-curtain { display: none; }
+
+        .intro-half {
+            position: absolute;
+            left: 0; right: 0;
+            background: #070A1C;
+            height: 50%;
+            transition: transform 1s cubic-bezier(0.85, 0, 0.15, 1);
+            z-index: 1;
+        }
+        .intro-half::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            height: 1px;
+        }
+        .intro-half.top { top: 0; }
+        .intro-half.top::after { bottom: 0; background: linear-gradient(90deg, transparent, var(--saffron), transparent); }
+        .intro-half.bottom { bottom: 0; }
+        .intro-half.bottom::after { top: 0; background: linear-gradient(90deg, transparent, var(--saffron), transparent); }
+
+        #intro-curtain.opening .intro-half.top { transform: translateY(-100%); }
+        #intro-curtain.opening .intro-half.bottom { transform: translateY(100%); }
+
+        .intro-grain {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+            opacity: 0.07;
+            mix-blend-mode: screen;
+            z-index: 2;
+        }
+
+        .intro-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            z-index: 3;
+            transition: opacity 0.5s 0.1s, transform 0.6s 0.1s;
+        }
+        #intro-curtain.opening .intro-stage {
+            opacity: 0;
+            transform: scale(1.08);
+        }
+
+        .intro-meta {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.35em;
+            color: var(--saffron);
+            text-transform: uppercase;
+            opacity: 0;
+            animation: introFade 0.6s 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .intro-meta::before, .intro-meta::after {
+            content: '';
+            display: inline-block;
+            width: 32px; height: 1px;
+            background: var(--saffron);
+            opacity: 0.6;
+        }
+
+        .intro-line {
+            width: 360px;
+            max-width: 70vw;
+            height: 1.5px;
+            background: var(--saffron);
+            transform: scaleX(0);
+            transform-origin: center;
+            animation: introLine 0.85s 0.4s cubic-bezier(0.7, 0, 0.2, 1) forwards;
+            box-shadow: 0 0 24px var(--saffron);
+        }
+        @keyframes introLine {
+            to { transform: scaleX(1); }
+        }
+
+        .intro-name {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: clamp(72px, 12vw, 168px);
+            line-height: 0.9;
+            letter-spacing: -0.045em;
+            color: var(--cream);
+            margin: 12px 0 4px;
+            display: flex;
+            gap: 0.02em;
+        }
+        .intro-name span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: introChar 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+        }
+        .intro-name span:nth-child(1) { animation-delay: 0.85s; }
+        .intro-name span:nth-child(2) { animation-delay: 0.95s; }
+        .intro-name span:nth-child(3) { animation-delay: 1.05s; }
+        .intro-name span:nth-child(4) { animation-delay: 1.15s; }
+        .intro-name span:nth-child(5) { animation-delay: 1.25s; color: var(--saffron); }
+        @keyframes introChar {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-tag {
+            font-family: var(--editorial);
+            font-style: italic;
+            font-size: clamp(16px, 1.6vw, 22px);
+            color: var(--cream);
+            opacity: 0;
+            animation: introFade 0.7s 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+            letter-spacing: 0.01em;
+        }
+        @keyframes introFade {
+            to { opacity: 1; }
+        }
+
+        .intro-progress {
+            position: absolute;
+            bottom: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;
+            height: 1px;
+            background: rgba(244, 237, 224, 0.15);
+            overflow: hidden;
+        }
+        .intro-progress::after {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; height: 100%;
+            width: 100%;
+            background: var(--saffron);
+            transform-origin: left;
+            transform: scaleX(0);
+            animation: introProgress 2.2s linear forwards;
+        }
+        @keyframes introProgress {
+            to { transform: scaleX(1); }
+        }
+
+        .intro-corner {
+            position: absolute;
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            color: rgba(244, 237, 224, 0.4);
+            text-transform: uppercase;
+            opacity: 0;
+            animation: introFade 0.6s 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+            z-index: 3;
+        }
+        .intro-corner.tl { top: 32px; left: 40px; }
+        .intro-corner.tr { top: 32px; right: 40px; text-align: right; }
+        .intro-corner.bl { bottom: 32px; left: 40px; }
+        .intro-corner.br { bottom: 32px; right: 40px; text-align: right; }
+        @media (max-width: 600px) {
+            .intro-corner { font-size: 9px; }
+            .intro-corner.tl { top: 20px; left: 24px; }
+            .intro-corner.tr { top: 20px; right: 24px; }
+            .intro-corner.bl { bottom: 20px; left: 24px; }
+            .intro-corner.br { bottom: 20px; right: 24px; }
+        }
+
+        /* Pause hero entrance animations while curtain is up */
+        html:not(.no-intro):not(.intro-done) .word-reveal > span,
+        html:not(.no-intro):not(.intro-done) .hero-sub,
+        html:not(.no-intro):not(.intro-done) .hero-cta-row,
+        html:not(.no-intro):not(.intro-done) .hero-meta,
+        html:not(.no-intro):not(.intro-done) .hero-right,
+        html:not(.no-intro):not(.intro-done) #ticker-bar { animation-play-state: paused; }
+
+        html:not(.no-intro):not(.intro-done) body { overflow: hidden; }
+
+        /* === BULLETIN — GLOBE + COUNTDOWN === */
+        #bulletin {
+            background: var(--ink);
+            color: var(--cream);
+            position: relative;
+            overflow: hidden;
+            padding: 120px 0;
+            border-top: 1px solid var(--ink-soft);
+            border-bottom: 1px solid var(--ink-soft);
+        }
+        @media (max-width: 768px) { #bulletin { padding: 80px 0; } }
+        #bulletin::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 25%;
+            transform: translate(-50%, -50%);
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(251,132,42,0.18) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        #bulletin .container { position: relative; z-index: 2; }
+
+        .bulletin-head { margin-bottom: 64px; max-width: 900px; }
+        .bulletin-eyebrow {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--cream);
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+            opacity: 0.85;
+        }
+        .bulletin-eyebrow .live-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+            box-shadow: 0 0 0 0 #ff4444;
+            animation: livepulse 1.6s infinite;
+        }
+        @keyframes livepulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+        .bulletin-eyebrow .sep { width: 28px; height: 1px; background: rgba(244,237,224,0.3); }
+        .bulletin-eyebrow .ed { color: var(--saffron); }
+
+        .bulletin-title {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 400;
+            font-size: clamp(40px, 5.5vw, 80px);
+            line-height: 0.95;
+            letter-spacing: -0.035em;
+            color: var(--cream);
+        }
+        .bulletin-title .ital { font-family: var(--editorial); font-style: italic; color: var(--saffron); }
+
+        .bulletin-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+        @media (max-width: 1024px) { .bulletin-grid { grid-template-columns: 1fr; gap: 56px; } }
+
+        /* GLOBE */
+        .globe-wrap {
+            position: relative;
+            aspect-ratio: 1;
+            max-width: 580px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        #globe {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 30px 60px rgba(251, 132, 42, 0.15));
+        }
+        .globe-pin-pulse { animation: pinPulse 2.5s infinite; transform-origin: center; transform-box: fill-box; }
+        @keyframes pinPulse {
+            0% { r: 3; opacity: 0.9; }
+            70% { r: 14; opacity: 0; }
+            100% { r: 14; opacity: 0; }
+        }
+        .globe-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background: rgba(14, 20, 48, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--ink-soft);
+            border-radius: 16px;
+            padding: 18px 24px;
+            min-width: 200px;
+        }
+        .globe-overlay .gc {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+            font-weight: 400;
+            font-size: 42px;
+            line-height: 1;
+            color: var(--cream);
+            letter-spacing: -0.03em;
+        }
+        .globe-overlay .gc .num { color: var(--saffron); }
+        .globe-overlay .gs {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(244, 237, 224, 0.6);
+            margin-top: 6px;
+        }
+        .globe-tooltip {
+            position: absolute;
+            background: var(--saffron);
+            color: var(--ink);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 999px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -180%);
+            transition: opacity 0.2s;
+            z-index: 5;
+            font-weight: 600;
+        }
+        .globe-tooltip.show { opacity: 1; }
+
+        /* COUNTDOWN CARD */
+        .countdown-wrap { position: relative; }
+        .cd-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--saffron);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cd-label::before {
+            content: '';
+            width: 24px; height: 1px;
+            background: var(--saffron);
+        }
+        .cd-card {
+            background: linear-gradient(180deg, rgba(244,237,224,0.04) 0%, rgba(244,237,224,0.01) 100%);
+            border: 1px solid var(--ink-soft);
+            border-radius: 24px;
+            padding: 40px 36px;
+            position: relative;
+            overflow: hidden;
+            transition: opacity 0.45s ease;
+        }
+        .cd-card.fading { opacity: 0.15; }
+        .cd-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--saffron), transparent);
+            animation: cd-sweep 4s ease-in-out infinite;
+        }
+        @keyframes cd-sweep {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+        .cd-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .cd-flag { font-size: 56px; line-height: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+        .cd-date {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(244, 237, 224, 0.5);
+            text-align: right;
+        }
+        .cd-country {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: 38px;
+            line-height: 1.02;
+            color: var(--cream);
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        .cd-name {
+            font-family: var(--editorial);
+            font-style: italic;
+            font-size: 20px;
+            color: var(--saffron);
+            margin-bottom: 32px;
+        }
+        .cd-numbers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            padding: 24px 0;
+            border-top: 1px solid var(--ink-soft);
+            border-bottom: 1px solid var(--ink-soft);
+            margin-bottom: 20px;
+        }
+        .cd-numbers > div {
+            text-align: center;
+            border-right: 1px solid var(--ink-soft);
+            padding: 0 8px;
+        }
+        .cd-numbers > div:last-child { border-right: none; }
+        .cdn-num {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+            font-weight: 400;
+            font-size: 44px;
+            line-height: 1;
+            color: var(--cream);
+            letter-spacing: -0.03em;
+            font-variant-numeric: tabular-nums;
+            transition: transform 0.3s;
+        }
+        .cdn-num.pulse { animation: numPulse 0.4s ease; }
+        @keyframes numPulse {
+            0%, 100% { color: var(--cream); }
+            50% { color: var(--saffron); }
+        }
+        .cdn-lab {
+            font-family: var(--mono);
+            font-size: 9px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(244, 237, 224, 0.5);
+            margin-top: 6px;
+        }
+        .cd-next {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(244, 237, 224, 0.55);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cd-next .next-label { color: var(--saffron); }
+
+        .cd-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        .cd-dots button {
+            width: 24px; height: 4px;
+            border-radius: 2px;
+            background: rgba(244, 237, 224, 0.15);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s, width 0.3s;
+            padding: 0;
+        }
+        .cd-dots button.active { background: var(--saffron); width: 40px; }
+        .cd-dots button:hover { background: rgba(244, 237, 224, 0.4); }
+
         /* === WATER RIPPLE === */
         .ripple-drop {
             position: fixed;
@@ -1269,6 +1952,29 @@
     </style>
 </head>
 <body>
+
+<!-- CINEMATIC INTRO CURTAIN -->
+<div id="intro-curtain">
+    <div class="intro-half top"></div>
+    <div class="intro-half bottom"></div>
+    <div class="intro-grain"></div>
+
+    <span class="intro-corner tl">IIPGM · MMXIV</span>
+    <span class="intro-corner tr">Edition · MMXXVI</span>
+    <span class="intro-corner bl">New Delhi · 28.6°N</span>
+    <span class="intro-corner br">A Sovereign Institute</span>
+
+    <div class="intro-stage">
+        <span class="intro-meta">The Indian Institute</span>
+        <div class="intro-line"></div>
+        <h1 class="intro-name" aria-label="IIPGM">
+            <span>I</span><span>I</span><span>P</span><span>G</span><span>M</span>
+        </h1>
+        <span class="intro-tag">— Creating Leaders —</span>
+    </div>
+
+    <div class="intro-progress"></div>
+</div>
 
 <div class="grain"></div>
 <div class="cursor-dot" id="cursorDot"></div>
@@ -1428,6 +2134,57 @@
         </div>
     </div>
 
+    <!-- BULLETIN — GLOBE + LIVE ELECTION COUNTDOWN -->
+    <section id="bulletin">
+        <div class="container">
+            <div class="bulletin-head reveal">
+                <div class="bulletin-eyebrow">
+                    <span class="live-dot"></span>
+                    <span>Live · The Bulletin</span>
+                    <span class="sep"></span>
+                    <span class="ed">Edition · MMXXVI</span>
+                </div>
+                <h2 class="bulletin-title">
+                    The world's <span class="ital">democracies</span> — in real time.
+                </h2>
+            </div>
+
+            <div class="bulletin-grid">
+                <div class="globe-wrap reveal" id="globeWrap">
+                    <svg id="globe" viewBox="0 0 600 600"></svg>
+                    <div class="globe-tooltip" id="globeTip"></div>
+                    <div class="globe-overlay">
+                        <div class="gc"><span class="num" id="globeCount">12</span> nations</div>
+                        <div class="gs">Advised by the institute</div>
+                    </div>
+                </div>
+
+                <div class="countdown-wrap reveal">
+                    <div class="cd-label">Election Watch · Upcoming</div>
+                    <div class="cd-card" id="cdCard">
+                        <div class="cd-top">
+                            <div class="cd-flag" id="cdFlag">🇧🇷</div>
+                            <div class="cd-date" id="cdDate">04 · OCT · 2026</div>
+                        </div>
+                        <div class="cd-country" id="cdCountry">Brazil</div>
+                        <div class="cd-name" id="cdName">General Election</div>
+                        <div class="cd-numbers">
+                            <div><div class="cdn-num" id="cdDays">000</div><div class="cdn-lab">Days</div></div>
+                            <div><div class="cdn-num" id="cdHours">00</div><div class="cdn-lab">Hours</div></div>
+                            <div><div class="cdn-num" id="cdMins">00</div><div class="cdn-lab">Min</div></div>
+                            <div><div class="cdn-num" id="cdSecs">00</div><div class="cdn-lab">Sec</div></div>
+                        </div>
+                        <div class="cd-next">
+                            <span class="next-label">Up Next:</span>
+                            <span id="cdNext">—</span>
+                        </div>
+                        <div class="cd-dots" id="cdDots"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- MISSION -->
     <section id="about" class="section">
         <div class="container">
@@ -1541,38 +2298,197 @@
 
             <div class="faculty-grid">
                 <article class="faculty-card reveal tilt" data-hover>
-                    <div class="fc-img-wrap">
-                        <span class="fc-tag">Technology · Statecraft</span>
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Edgar Zorilla" loading="lazy">
-                    </div>
-                    <div class="fc-body">
-                        <h3 class="fc-name">Mr. Edgar Zorilla</h3>
-                        <div class="fc-role">Co-founder · Global E-Voting Solutions</div>
-                        <p class="fc-bio">A global authority on technology systems for electronic voting (Smartmatic). Architect of our institutional technology focus and digital integrity practice.</p>
+                    <div class="faculty-inner">
+                        <div class="faculty-front">
+                            <div class="fc-img-wrap">
+                                <span class="fc-tag">Technology · Statecraft</span>
+                                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Edgar Zorilla" loading="lazy">
+                                <button class="flip-toggle front" aria-label="Reveal profile of Edgar Zorilla">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="fc-body">
+                                <h3 class="fc-name">Mr. Edgar Zorilla</h3>
+                                <div class="fc-role">Co-founder · Global E-Voting Solutions</div>
+                                <p class="fc-bio">A global authority on technology systems for electronic voting (Smartmatic). Architect of our institutional technology focus and digital integrity practice.</p>
+                            </div>
+                        </div>
+                        <div class="faculty-back">
+                            <div class="fb-head">
+                                <span class="fb-eyebrow">Profile · Reverse</span>
+                                <button class="flip-toggle back" aria-label="Close profile">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <h3 class="fb-name">Edgar Zorilla</h3>
+                            <div class="fb-role">Co-founder · Smartmatic</div>
+                            <div class="fb-divider"></div>
+                            <div class="fb-section">
+                                <span class="fb-label">Education</span>
+                                <p>M.Sc. Electoral Systems · Cambridge<br>B.Eng. Computer Systems · Universidad de los Andes</p>
+                            </div>
+                            <div class="fb-section">
+                                <span class="fb-label">Selected Publications</span>
+                                <ul>
+                                    <li>"Securing the Digital Vote" — 2023</li>
+                                    <li>"Algorithmic Integrity in Elections" — 2022</li>
+                                    <li>"Smartmatic: A Case Study" — 2021</li>
+                                </ul>
+                            </div>
+                            <div class="fb-section">
+                                <span class="fb-label">Expertise</span>
+                                <div class="fb-chips">
+                                    <span>E-Voting</span>
+                                    <span>Election Security</span>
+                                    <span>Digital Audit</span>
+                                </div>
+                            </div>
+                            <blockquote class="fb-quote">Trust is the only currency that compounds in a democracy.</blockquote>
+                            <div class="fb-links">
+                                <a href="#" class="fb-link" data-hover>
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.7c-.9 0-1.5-.6-1.5-1.4 0-.8.6-1.4 1.5-1.4s1.5.6 1.5 1.4c0 .8-.6 1.4-1.5 1.4zm12.5 12.7h-3v-5.6c0-3.1 3.5-2.8 3.5 0v5.6h-.5z"/></svg>
+                                    LinkedIn
+                                </a>
+                                <a href="#" class="fb-link" data-hover>
+                                    <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M7 1v9m0 0L3 6m4 4l4-4M2 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    CV
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </article>
 
                 <article class="faculty-card reveal tilt" data-hover>
-                    <div class="fc-img-wrap">
-                        <span class="fc-tag">Campaign Strategy</span>
-                        <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Amresh K" loading="lazy">
-                    </div>
-                    <div class="fc-body">
-                        <h3 class="fc-name">Mr. Amresh K</h3>
-                        <div class="fc-role">National Campaign Strategist · India 2014</div>
-                        <p class="fc-bio">National core-team member of the historic 2014 general elections. Specialises in campaign architecture, electoral mathematics, and constituency design.</p>
+                    <div class="faculty-inner">
+                        <div class="faculty-front">
+                            <div class="fc-img-wrap">
+                                <span class="fc-tag">Campaign Strategy</span>
+                                <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Amresh K" loading="lazy">
+                                <button class="flip-toggle front" aria-label="Reveal profile of Amresh K">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="fc-body">
+                                <h3 class="fc-name">Mr. Amresh K</h3>
+                                <div class="fc-role">National Campaign Strategist · India 2014</div>
+                                <p class="fc-bio">National core-team member of the historic 2014 general elections. Specialises in campaign architecture, electoral mathematics, and constituency design.</p>
+                            </div>
+                        </div>
+                        <div class="faculty-back">
+                            <div class="fb-head">
+                                <span class="fb-eyebrow">Profile · Reverse</span>
+                                <button class="flip-toggle back" aria-label="Close profile">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <h3 class="fb-name">Amresh K</h3>
+                            <div class="fb-role">National Core Team · 2014 Mandate</div>
+                            <div class="fb-divider"></div>
+                            <div class="fb-section">
+                                <span class="fb-label">Education</span>
+                                <p>MBA Strategic Communications · IIM-A<br>B.A. Political Science · Delhi University</p>
+                            </div>
+                            <div class="fb-section">
+                                <span class="fb-label">Selected Publications</span>
+                                <ul>
+                                    <li>"The 2014 Mandate: An Inside Account" — 2018</li>
+                                    <li>"Constituency Mathematics" — 2020</li>
+                                    <li>"Field Strategy in the Digital Age" — 2023</li>
+                                </ul>
+                            </div>
+                            <div class="fb-section">
+                                <span class="fb-label">Expertise</span>
+                                <div class="fb-chips">
+                                    <span>National Campaigns</span>
+                                    <span>Electoral Math</span>
+                                    <span>Field Ops</span>
+                                </div>
+                            </div>
+                            <blockquote class="fb-quote">Campaigns are won where no cameras reach.</blockquote>
+                            <div class="fb-links">
+                                <a href="#" class="fb-link" data-hover>
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.7c-.9 0-1.5-.6-1.5-1.4 0-.8.6-1.4 1.5-1.4s1.5.6 1.5 1.4c0 .8-.6 1.4-1.5 1.4zm12.5 12.7h-3v-5.6c0-3.1 3.5-2.8 3.5 0v5.6h-.5z"/></svg>
+                                    LinkedIn
+                                </a>
+                                <a href="#" class="fb-link" data-hover>
+                                    <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M7 1v9m0 0L3 6m4 4l4-4M2 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    CV
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </article>
 
                 <article class="faculty-card reveal tilt" data-hover>
-                    <div class="fc-img-wrap">
-                        <span class="fc-tag">Governance · Strategy</span>
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Ms. Riya Sharma" loading="lazy">
-                    </div>
-                    <div class="fc-body">
-                        <h3 class="fc-name">Ms. Riya Sharma</h3>
-                        <div class="fc-role">Governance & Corporate Strategy</div>
-                        <p class="fc-bio">Governance professional formerly with a Big Four practice — consulted with leading multinationals on corporate strategy, board governance, and stakeholder mapping.</p>
+                    <div class="faculty-inner">
+                        <div class="faculty-front">
+                            <div class="fc-img-wrap">
+                                <span class="fc-tag">Governance · Strategy</span>
+                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Ms. Riya Sharma" loading="lazy">
+                                <button class="flip-toggle front" aria-label="Reveal profile of Riya Sharma">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="fc-body">
+                                <h3 class="fc-name">Ms. Riya Sharma</h3>
+                                <div class="fc-role">Governance & Corporate Strategy</div>
+                                <p class="fc-bio">Governance professional formerly with a Big Four practice — consulted with leading multinationals on corporate strategy, board governance, and stakeholder mapping.</p>
+                            </div>
+                        </div>
+                        <div class="faculty-back">
+                            <div class="fb-head">
+                                <span class="fb-eyebrow">Profile · Reverse</span>
+                                <button class="flip-toggle back" aria-label="Close profile">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <h3 class="fb-name">Riya Sharma</h3>
+                            <div class="fb-role">Big Four · Board Advisory</div>
+                            <div class="fb-divider"></div>
+                            <div class="fb-section">
+                                <span class="fb-label">Education</span>
+                                <p>M.A. Public Policy · London School of Economics<br>B.Com (Hons) · SRCC · CFA Charterholder</p>
+                            </div>
+                            <div class="fb-section">
+                                <span class="fb-label">Selected Publications</span>
+                                <ul>
+                                    <li>"Governance in Plural Societies" — 2024</li>
+                                    <li>"Corporate Stewardship Review" — 2022</li>
+                                    <li>"ESG: Beyond Compliance" — 2021</li>
+                                </ul>
+                            </div>
+                            <div class="fb-section">
+                                <span class="fb-label">Expertise</span>
+                                <div class="fb-chips">
+                                    <span>Public Policy</span>
+                                    <span>Board Advisory</span>
+                                    <span>ESG</span>
+                                </div>
+                            </div>
+                            <blockquote class="fb-quote">The boardroom and the ballot box share more than we admit.</blockquote>
+                            <div class="fb-links">
+                                <a href="#" class="fb-link" data-hover>
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.7c-.9 0-1.5-.6-1.5-1.4 0-.8.6-1.4 1.5-1.4s1.5.6 1.5 1.4c0 .8-.6 1.4-1.5 1.4zm12.5 12.7h-3v-5.6c0-3.1 3.5-2.8 3.5 0v5.6h-.5z"/></svg>
+                                    LinkedIn
+                                </a>
+                                <a href="#" class="fb-link" data-hover>
+                                    <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M7 1v9m0 0L3 6m4 4l4-4M2 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    CV
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </article>
             </div>
@@ -1777,6 +2693,29 @@
 document.addEventListener('DOMContentLoaded', () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // === CINEMATIC INTRO ===
+    const introCurtain = document.getElementById('intro-curtain');
+    const skipIntro = document.documentElement.classList.contains('no-intro');
+    if (introCurtain && !skipIntro) {
+        // Open curtain at 1.8s
+        setTimeout(() => {
+            introCurtain.classList.add('opening');
+        }, 1800);
+        // Release hero animations + remove curtain at 2.6s
+        setTimeout(() => {
+            document.documentElement.classList.add('intro-done');
+            try { sessionStorage.setItem('iipgm-intro-seen', '1'); } catch (e) {}
+        }, 2600);
+        // Fully remove from DOM
+        setTimeout(() => {
+            if (introCurtain.parentNode) introCurtain.parentNode.removeChild(introCurtain);
+        }, 3200);
+    } else if (introCurtain) {
+        // Skip path — clean up immediately
+        introCurtain.parentNode && introCurtain.parentNode.removeChild(introCurtain);
+        document.documentElement.classList.add('intro-done');
+    }
+
     // === CUSTOM CURSOR ===
     const cursorDot = document.getElementById('cursorDot');
     const cursorRing = document.getElementById('cursorRing');
@@ -1943,6 +2882,297 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // === BULLETIN — INTERACTIVE GLOBE ===
+    const initGlobe = () => {
+        if (typeof d3 === 'undefined' || typeof topojson === 'undefined') return;
+        const svg = d3.select('#globe');
+        if (svg.empty()) return;
+        const wrap = document.getElementById('globeWrap');
+        const tip = document.getElementById('globeTip');
+        const W = 600, H = 600;
+
+        const projection = d3.geoOrthographic()
+            .scale(260)
+            .translate([W/2, H/2])
+            .rotate([20, -15]);
+        const path = d3.geoPath(projection);
+
+        const defs = svg.append('defs');
+        const radial = defs.append('radialGradient').attr('id', 'globeGrad');
+        radial.append('stop').attr('offset', '0%').attr('stop-color', '#1A2147');
+        radial.append('stop').attr('offset', '70%').attr('stop-color', '#0E1430');
+        radial.append('stop').attr('offset', '100%').attr('stop-color', '#070A1C');
+
+        const glowFilter = defs.append('filter').attr('id', 'pinGlow').attr('x', '-200%').attr('y', '-200%').attr('width', '500%').attr('height', '500%');
+        glowFilter.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'blur');
+        const fm = glowFilter.append('feMerge');
+        fm.append('feMergeNode').attr('in', 'blur');
+        fm.append('feMergeNode').attr('in', 'SourceGraphic');
+
+        // Sphere (ocean)
+        svg.append('path').datum({type: 'Sphere'})
+            .attr('d', path)
+            .attr('fill', 'url(#globeGrad)')
+            .attr('stroke', 'rgba(184,148,95,0.25)')
+            .attr('stroke-width', 0.8);
+
+        // Graticule
+        svg.append('path').datum(d3.geoGraticule10())
+            .attr('class', 'graticule')
+            .attr('d', path)
+            .attr('fill', 'none')
+            .attr('stroke', 'rgba(244,237,224,0.08)')
+            .attr('stroke-width', 0.5);
+
+        const landGroup = svg.append('g').attr('class', 'land');
+        const pinGroup = svg.append('g').attr('class', 'pins');
+
+        const pins = [
+            { name: 'India', lat: 22.0, lng: 78.96, primary: true },
+            { name: 'United States', lat: 39.5, lng: -98.35 },
+            { name: 'United Kingdom', lat: 54.0, lng: -2.5 },
+            { name: 'Brazil', lat: -14.24, lng: -51.93 },
+            { name: 'South Africa', lat: -29.0, lng: 24.0 },
+            { name: 'Philippines', lat: 12.88, lng: 121.77 },
+            { name: 'Kenya', lat: -0.02, lng: 37.91 },
+            { name: 'Indonesia', lat: -2.5, lng: 118.0 },
+            { name: 'Mexico', lat: 23.63, lng: -102.55 },
+            { name: 'Australia', lat: -25.27, lng: 133.78 },
+            { name: 'Nigeria', lat: 9.08, lng: 8.68 },
+            { name: 'Sri Lanka', lat: 7.87, lng: 80.77 }
+        ];
+
+        // Animate the pin count number
+        let countEl = document.getElementById('globeCount');
+        if (countEl) {
+            let n = 0;
+            const target = pins.length;
+            const step = () => {
+                n += 1;
+                countEl.textContent = n;
+                if (n < target) setTimeout(step, 80);
+            };
+            const ioCount = new IntersectionObserver((es) => {
+                es.forEach(e => { if (e.isIntersecting) { step(); ioCount.disconnect(); } });
+            }, { threshold: 0.4 });
+            ioCount.observe(wrap);
+        }
+
+        // Load world TopoJSON
+        fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+            .then(r => r.json())
+            .then(world => {
+                const countries = topojson.feature(world, world.objects.countries);
+                landGroup.selectAll('path')
+                    .data(countries.features)
+                    .enter().append('path')
+                    .attr('d', path)
+                    .attr('fill', d => {
+                        // Highlight countries we operate in
+                        const name = d.properties.name;
+                        const isOurs = ['India', 'United States of America', 'United Kingdom', 'Brazil', 'South Africa', 'Philippines', 'Kenya', 'Indonesia', 'Mexico', 'Australia', 'Nigeria', 'Sri Lanka'].includes(name);
+                        return isOurs ? 'rgba(251, 132, 42, 0.22)' : 'rgba(244, 237, 224, 0.04)';
+                    })
+                    .attr('stroke', 'rgba(184,148,95,0.3)')
+                    .attr('stroke-width', 0.4);
+                redrawPins();
+            }).catch(() => { redrawPins(); });
+
+        const redrawPins = () => {
+            pinGroup.selectAll('g.pin').remove();
+            const rot = projection.rotate();
+            const center = [-rot[0], -rot[1]];
+
+            pins.forEach((pin, i) => {
+                const dist = d3.geoDistance([pin.lng, pin.lat], center);
+                const visible = dist < Math.PI / 2 - 0.05;
+                if (!visible) return;
+
+                const [x, y] = projection([pin.lng, pin.lat]);
+                const g = pinGroup.append('g')
+                    .attr('class', 'pin')
+                    .attr('transform', `translate(${x},${y})`)
+                    .style('cursor', 'pointer');
+
+                // Pulsing outer ring
+                g.append('circle')
+                    .attr('r', 4)
+                    .attr('fill', 'none')
+                    .attr('stroke', '#FB842A')
+                    .attr('stroke-width', 1.5)
+                    .style('animation', `pinPulse 2.4s ${(i * 0.18).toFixed(2)}s infinite`);
+
+                // Inner glow dot
+                g.append('circle')
+                    .attr('r', pin.primary ? 5 : 3.5)
+                    .attr('fill', '#FB842A')
+                    .attr('filter', 'url(#pinGlow)');
+
+                // Bright center
+                g.append('circle')
+                    .attr('r', pin.primary ? 2.5 : 1.5)
+                    .attr('fill', '#F4EDE0');
+
+                // Hover tooltip
+                g.on('mouseenter', () => {
+                    tip.textContent = pin.name;
+                    tip.classList.add('show');
+                    const wr = wrap.getBoundingClientRect();
+                    const sx = (x / W) * wr.width;
+                    const sy = (y / H) * wr.height;
+                    tip.style.left = sx + 'px';
+                    tip.style.top = sy + 'px';
+                });
+                g.on('mouseleave', () => tip.classList.remove('show'));
+            });
+        };
+
+        // Animation loop — pause when offscreen or on hover
+        let inView = false;
+        let isHovered = false;
+        const ioGlobe = new IntersectionObserver((es) => {
+            es.forEach(e => inView = e.isIntersecting);
+        });
+        ioGlobe.observe(wrap);
+
+        wrap.addEventListener('mouseenter', () => isHovered = true);
+        wrap.addEventListener('mouseleave', () => isHovered = false);
+
+        let last = performance.now();
+        const tick = (now) => {
+            const dt = now - last;
+            last = now;
+            if (inView && !isHovered) {
+                const rot = projection.rotate();
+                projection.rotate([rot[0] + dt * 0.012, rot[1]]);
+                landGroup.selectAll('path').attr('d', path);
+                svg.select('.graticule').attr('d', path);
+                redrawPins();
+            }
+            requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+    };
+
+    if (!prefersReducedMotion) {
+        // Wait briefly for D3 to load
+        const waitD3 = setInterval(() => {
+            if (typeof d3 !== 'undefined' && typeof topojson !== 'undefined') {
+                clearInterval(waitD3);
+                initGlobe();
+            }
+        }, 100);
+        setTimeout(() => clearInterval(waitD3), 8000);
+    }
+
+    // === ELECTION COUNTDOWN ===
+    const elections = [
+        { country: 'Brazil', flag: '🇧🇷', name: 'General Election', date: '2026-10-04T22:00:00Z', dateLabel: '04 · OCT · 2026' },
+        { country: 'United States', flag: '🇺🇸', name: 'Midterm Elections', date: '2026-11-03T05:00:00Z', dateLabel: '03 · NOV · 2026' },
+        { country: 'France', flag: '🇫🇷', name: 'Presidential Election', date: '2027-04-25T07:00:00Z', dateLabel: '25 · APR · 2027' },
+        { country: 'Argentina', flag: '🇦🇷', name: 'Presidential Election', date: '2027-10-24T11:00:00Z', dateLabel: '24 · OCT · 2027' },
+        { country: 'Australia', flag: '🇦🇺', name: 'Federal Election', date: '2028-05-13T22:00:00Z', dateLabel: '13 · MAY · 2028' },
+        { country: 'India', flag: '🇮🇳', name: 'Lok Sabha Election', date: '2029-05-15T01:00:00Z', dateLabel: '15 · MAY · 2029' }
+    ];
+
+    const cdEl = {
+        card: document.getElementById('cdCard'),
+        flag: document.getElementById('cdFlag'),
+        date: document.getElementById('cdDate'),
+        country: document.getElementById('cdCountry'),
+        name: document.getElementById('cdName'),
+        days: document.getElementById('cdDays'),
+        hours: document.getElementById('cdHours'),
+        mins: document.getElementById('cdMins'),
+        secs: document.getElementById('cdSecs'),
+        next: document.getElementById('cdNext'),
+        dots: document.getElementById('cdDots')
+    };
+
+    if (cdEl.card) {
+        let cdIdx = 0;
+        const renderDots = () => {
+            cdEl.dots.innerHTML = '';
+            elections.forEach((_, i) => {
+                const b = document.createElement('button');
+                if (i === cdIdx) b.classList.add('active');
+                b.setAttribute('aria-label', 'Switch to ' + elections[i].country);
+                b.addEventListener('click', () => {
+                    if (i === cdIdx) return;
+                    cdIdx = i;
+                    swap();
+                });
+                cdEl.dots.appendChild(b);
+            });
+        };
+
+        const pad = (n) => String(n).padStart(2, '0');
+        const lastVals = { d: -1, h: -1, m: -1, s: -1 };
+
+        const updateTime = () => {
+            const e = elections[cdIdx];
+            const diff = new Date(e.date) - new Date();
+            if (diff < 0) {
+                cdEl.days.textContent = '000';
+                cdEl.hours.textContent = '00';
+                cdEl.mins.textContent = '00';
+                cdEl.secs.textContent = '00';
+                return;
+            }
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+
+            if (d !== lastVals.d) { cdEl.days.textContent = String(d).padStart(3, '0'); lastVals.d = d; }
+            if (h !== lastVals.h) { cdEl.hours.textContent = pad(h); lastVals.h = h; }
+            if (m !== lastVals.m) { cdEl.mins.textContent = pad(m); lastVals.m = m; }
+            if (s !== lastVals.s) {
+                cdEl.secs.textContent = pad(s);
+                cdEl.secs.classList.remove('pulse');
+                void cdEl.secs.offsetWidth;
+                cdEl.secs.classList.add('pulse');
+                lastVals.s = s;
+            }
+        };
+
+        const renderContent = () => {
+            const e = elections[cdIdx];
+            cdEl.flag.textContent = e.flag;
+            cdEl.date.textContent = e.dateLabel;
+            cdEl.country.textContent = e.country;
+            cdEl.name.textContent = e.name;
+            const next = elections[(cdIdx + 1) % elections.length].country;
+            const after = elections[(cdIdx + 2) % elections.length].country;
+            cdEl.next.textContent = `${next} · ${after}`;
+            lastVals.d = lastVals.h = lastVals.m = lastVals.s = -1;
+            updateTime();
+            renderDots();
+        };
+
+        const swap = () => {
+            cdEl.card.classList.add('fading');
+            setTimeout(() => {
+                renderContent();
+                cdEl.card.classList.remove('fading');
+            }, 420);
+        };
+
+        let rotateTimer;
+        const startRotate = () => {
+            rotateTimer = setInterval(() => {
+                cdIdx = (cdIdx + 1) % elections.length;
+                swap();
+            }, 7500);
+        };
+        cdEl.card.addEventListener('mouseenter', () => clearInterval(rotateTimer));
+        cdEl.card.addEventListener('mouseleave', () => startRotate());
+
+        renderContent();
+        setInterval(updateTime, 1000);
+        startRotate();
+    }
+
     // === WATER RIPPLE on non-interactive click ===
     if (!prefersReducedMotion) {
         const skipSelector = 'a, button, input, textarea, select, label, [role="button"], .ff, .pill-btn, .submit-btn, .mobile-toggle, .close-btn';
@@ -1973,21 +3203,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // === FACULTY CARD 3D TILT ===
+    // === FACULTY CARD 3D FLIP + TILT ===
+    document.querySelectorAll('.flip-toggle').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const card = btn.closest('.faculty-card');
+            if (!card) return;
+            const inner = card.querySelector('.faculty-inner');
+            if (inner) inner.style.transform = '';
+            const img = card.querySelector('.faculty-front img');
+            if (img) img.style.transform = '';
+            card.classList.remove('tilt-active');
+            card.classList.toggle('flipped');
+        });
+    });
+
     if (!prefersReducedMotion && window.innerWidth > 1024) {
         document.querySelectorAll('.tilt').forEach(card => {
-            const img = card.querySelector('img');
-            card.addEventListener('mouseenter', () => card.classList.add('tilt-active'));
+            const inner = card.querySelector('.faculty-inner');
+            const img = card.querySelector('.faculty-front img');
+            if (!inner) return;
+            card.addEventListener('mouseenter', () => {
+                if (!card.classList.contains('flipped')) card.classList.add('tilt-active');
+            });
             card.addEventListener('mousemove', (e) => {
+                if (card.classList.contains('flipped')) return;
                 const r = card.getBoundingClientRect();
                 const px = (e.clientX - r.left) / r.width - 0.5;
                 const py = (e.clientY - r.top) / r.height - 0.5;
-                card.style.transform = `perspective(1200px) rotateX(${-py * 6}deg) rotateY(${px * 6}deg) translateY(-6px)`;
+                inner.style.transform = `rotateX(${-py * 5}deg) rotateY(${px * 5}deg) translateY(-6px)`;
                 if (img) img.style.transform = `scale(1.08) translate(${px * -16}px, ${py * -16}px)`;
             });
             card.addEventListener('mouseleave', () => {
                 card.classList.remove('tilt-active');
-                card.style.transform = '';
+                if (!card.classList.contains('flipped')) inner.style.transform = '';
                 if (img) img.style.transform = '';
             });
         });
