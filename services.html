@@ -497,6 +497,40 @@
         /* SCROLL PROGRESS */
         .scroll-prog { position: fixed; top: 0; left: 0; width: 0%; height: 2px; background: var(--saffron); z-index: 200; transition: width 0.1s; }
 
+        /* WATER RIPPLE */
+        .ripple-drop {
+            position: fixed; pointer-events: none; z-index: 9997;
+            transform: translate(-50%, -50%) scale(0.4);
+            border-radius: 50%; width: 14px; height: 14px;
+            background: radial-gradient(circle, var(--saffron) 0%, rgba(251,132,42,0.4) 60%, transparent 100%);
+            opacity: 1;
+            animation: drop-splash 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+            filter: blur(0.5px);
+        }
+        @keyframes drop-splash {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            60% { transform: translate(-50%, -50%) scale(2.4); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(3.6); opacity: 0; }
+        }
+        .water-ripple {
+            position: fixed; pointer-events: none; z-index: 9997;
+            transform: translate(-50%, -50%);
+            border-radius: 50%; border: 1.5px solid var(--saffron);
+            opacity: 0; width: 0; height: 0;
+            box-shadow: 0 0 24px rgba(251, 132, 42, 0.2);
+            animation: water-spread 1.6s cubic-bezier(0.15, 0.7, 0.25, 1) forwards;
+        }
+        .water-ripple.r2 { border-color: rgba(251, 132, 42, 0.55); animation-delay: 0.12s; animation-duration: 1.9s; }
+        .water-ripple.r3 { border-color: rgba(216, 84, 28, 0.35); animation-delay: 0.26s; animation-duration: 2.2s; }
+        @keyframes water-spread {
+            0% { width: 0; height: 0; opacity: 0; border-width: 3px; }
+            15% { opacity: 0.85; border-width: 2.5px; }
+            100% { width: 760px; height: 760px; opacity: 0; border-width: 0.5px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .ripple-drop, .water-ripple { display: none !important; }
+        }
+
         /* MOBILE MENU */
         .mobile-toggle {
             background: var(--ink); color: var(--cream);
@@ -990,6 +1024,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.transform = `translate(${x * 0.18}px, ${y * 0.25}px)`;
             });
             btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+        });
+    }
+
+    // WATER RIPPLE on non-interactive click
+    if (!prefersReducedMotion) {
+        const skipSelector = 'a, button, input, textarea, select, label, [role="button"], .pill-btn, .mobile-toggle';
+        document.addEventListener('click', (e) => {
+            if (e.target.closest(skipSelector)) return;
+            const x = e.clientX, y = e.clientY;
+
+            const drop = document.createElement('div');
+            drop.className = 'ripple-drop';
+            drop.style.left = x + 'px';
+            drop.style.top = y + 'px';
+            document.body.appendChild(drop);
+            setTimeout(() => drop.remove(), 600);
+
+            for (let i = 1; i <= 3; i++) {
+                const ring = document.createElement('div');
+                ring.className = `water-ripple r${i}`;
+                ring.style.left = x + 'px';
+                ring.style.top = y + 'px';
+                document.body.appendChild(ring);
+                setTimeout(() => ring.remove(), 2600);
+            }
         });
     }
 });
