@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IIPGM — The Indian Institute of Political Governance & Management</title>
+    <meta name="description" content="A sovereign institute advising the world's largest democratic processes. Creating tomorrow's political leaders through research, strategy, and statecraft.">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Instrument+Serif:ital@0;1&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230E1430%22/><text x=%2250%22 y=%2270%22 font-family=%22serif%22 font-size=%2270%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22%23FB842A%22>I</text></svg>">
+
+    <style>
+        :root {
+            --ink: #0E1430;
+            --ink-soft: #1A2147;
+            --cream: #F4EDE0;
+            --bone: #FAF6EE;
+            --parchment: #EFE6D4;
+            --saffron: #FB842A;
+            --ember: #D8541C;
+            --gold: #B8945F;
+            --ash: #6B6F7A;
+            --hairline: rgba(14, 20, 48, 0.12);
+            --hairline-soft: rgba(14, 20, 48, 0.06);
+
+            --display: 'Fraunces', serif;
+            --editorial: 'Instrument Serif', serif;
+            --sans: 'Bricolage Grotesque', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        html, body { background: var(--cream); color: var(--ink); }
+
+        body {
+            font-family: var(--sans);
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        @media (max-width: 1024px) { body { cursor: auto; } }
+
+        ::selection { background: var(--ink); color: var(--saffron); }
+
+        /* === GRAIN OVERLAY === */
+        .grain {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            pointer-events: none;
+            opacity: 0.06;
+            mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        }
+
+        /* === CUSTOM CURSOR === */
+        .cursor-dot {
+            position: fixed;
+            top: 0; left: 0;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--saffron);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background 0.2s;
+            mix-blend-mode: difference;
+        }
+        .cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            width: 32px; height: 32px;
+            border: 1px solid var(--ink);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.25s ease, height 0.25s ease, border-color 0.2s;
+        }
+        .cursor-hover .cursor-dot { width: 0; height: 0; }
+        .cursor-hover .cursor-ring { width: 56px; height: 56px; border-color: var(--saffron); }
+
+        /* === TYPOGRAPHY === */
+        .font-display { font-family: var(--display); font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0; }
+        .font-display-wonk { font-family: var(--display); font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1; }
+        .font-editorial { font-family: var(--editorial); font-style: italic; }
+        .font-sans { font-family: var(--sans); }
+        .font-mono { font-family: var(--mono); }
+
+        .eyebrow {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: var(--ash);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .eyebrow::before {
+            content: '';
+            display: inline-block;
+            width: 28px;
+            height: 1px;
+            background: var(--saffron);
+        }
+        .eyebrow.centered::before { display: none; }
+        .eyebrow.centered { justify-content: center; }
+
+        .section-no {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            color: var(--saffron);
+        }
+
+        /* Mega serif headline */
+        .mega {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+            font-weight: 400;
+            line-height: 0.95;
+            letter-spacing: -0.035em;
+            color: var(--ink);
+        }
+
+        /* === HEADER === */
+        #ticker-bar {
+            background: var(--ink);
+            color: var(--cream);
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 8px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .ticker-track {
+            display: inline-flex;
+            white-space: nowrap;
+            animation: ticker 40s linear infinite;
+        }
+        .ticker-track > span {
+            padding: 0 2.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .ticker-track > span::after {
+            content: '◆';
+            color: var(--saffron);
+            margin-left: 2.5rem;
+            opacity: 0.7;
+        }
+        @keyframes ticker {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        #main-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(244, 237, 224, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--hairline-soft);
+            transition: padding 0.3s ease, background 0.3s ease;
+        }
+        #main-header.scrolled {
+            background: rgba(244, 237, 224, 0.95);
+            border-bottom-color: var(--hairline);
+        }
+
+        .nav-link {
+            position: relative;
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            padding: 8px 0;
+            transition: color 0.3s;
+        }
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 6px;
+            height: 6px;
+            background: var(--saffron);
+            border-radius: 50%;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .nav-link:hover::before, .nav-link.active::before { opacity: 1; transform: translateY(0); }
+        .nav-link:hover { color: var(--ember); }
+
+        .logo-mark {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            position: relative;
+        }
+        .logo-image {
+            height: 52px;
+            width: auto;
+            mix-blend-mode: multiply;
+            filter: contrast(1.1);
+            transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+        }
+        .logo-mark:hover .logo-image { transform: rotate(-3deg) scale(1.04); }
+        .logo-divider {
+            width: 1px;
+            height: 36px;
+            background: var(--hairline);
+            margin: 0 4px;
+        }
+        .logo-tag {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+            gap: 4px;
+        }
+        .logo-tag .lt1 {
+            font-family: var(--mono);
+            font-size: 9px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--saffron);
+            font-weight: 600;
+        }
+        .logo-tag .lt2 {
+            font-family: var(--editorial);
+            font-style: italic;
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        /* === MAGNETIC PILL BUTTON === */
+        .pill-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 28px;
+            background: var(--ink);
+            color: var(--cream);
+            font-family: var(--sans);
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.4), color 0.3s;
+            border: 1px solid var(--ink);
+        }
+        .pill-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--saffron);
+            border-radius: 999px;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1);
+            z-index: 0;
+        }
+        .pill-btn:hover::before { transform: translateY(0); }
+        .pill-btn:hover { color: var(--ink); }
+        .pill-btn > * { position: relative; z-index: 1; }
+        .pill-btn .arrow {
+            display: inline-flex;
+            width: 28px; height: 28px;
+            align-items: center; justify-content: center;
+            border-radius: 50%;
+            background: var(--saffron);
+            color: var(--ink);
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+        }
+        .pill-btn:hover .arrow { transform: rotate(-45deg); background: var(--ink); color: var(--saffron); }
+
+        .pill-btn.outline {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--ink);
+        }
+        .pill-btn.outline::before { background: var(--ink); }
+        .pill-btn.outline:hover { color: var(--cream); }
+        .pill-btn.outline:hover .arrow { background: var(--cream); color: var(--ink); }
+
+        /* === HERO === */
+        #hero {
+            position: relative;
+            min-height: 100vh;
+            padding: 80px 0 40px;
+            overflow: hidden;
+            background: var(--cream);
+        }
+        #hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                600px circle at var(--mx, 50%) var(--my, 50%),
+                rgba(251, 132, 42, 0.18),
+                transparent 50%
+            );
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.3s;
+            opacity: var(--spot-opacity, 0);
+        }
+        #hero:hover::after { opacity: 1; }
+        .hero-grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--hairline-soft) 1px, transparent 1px),
+                linear-gradient(90deg, var(--hairline-soft) 1px, transparent 1px);
+            background-size: 80px 80px;
+            mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+            pointer-events: none;
+            opacity: 0.5;
+            z-index: 0;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        @media (max-width: 1024px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 60px; padding: 0 24px; }
+        }
+
+        .hero-left { position: relative; z-index: 5; }
+        .hero-headline {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+            font-weight: 400;
+            font-size: clamp(48px, 7.5vw, 116px);
+            line-height: 0.92;
+            letter-spacing: -0.04em;
+            color: var(--ink);
+            margin: 28px 0;
+        }
+        .hero-headline .italic-word {
+            font-family: var(--editorial);
+            font-style: italic;
+            font-weight: 400;
+            color: var(--ember);
+        }
+        .hero-headline .underline-word {
+            display: inline-block;
+            position: relative;
+        }
+        .hero-headline .underline-word::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 8px;
+            width: 100%; height: 8px;
+            background: var(--saffron);
+            opacity: 0.35;
+            z-index: -1;
+        }
+
+        .word-reveal {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: bottom;
+            padding-block-end: 0.22em;
+            margin-block-end: -0.22em;
+            line-height: 1;
+        }
+        .word-reveal > span {
+            display: inline-block;
+            transform: translateY(115%);
+            animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+            padding-block-end: 0.02em;
+        }
+        @keyframes rise {
+            from { transform: translateY(115%); }
+            to { transform: translateY(0); }
+        }
+
+        .hero-sub {
+            font-size: 19px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+            max-width: 540px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp 1s 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-cta-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp 1s 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 48px;
+            margin-top: 64px;
+            padding-top: 28px;
+            border-top: 1px solid var(--hairline);
+            opacity: 0;
+            animation: fadeUp 1s 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+        }
+        .hero-meta-item .label {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ash);
+            margin-bottom: 6px;
+        }
+        .hero-meta-item .val {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 1;
+            color: var(--ink);
+        }
+        .hero-meta-item .val .plus { color: var(--saffron); }
+
+        /* Hero video framed */
+        .hero-right {
+            position: relative;
+            opacity: 0;
+            animation: fadeUp 1.2s 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+        }
+        .video-frame {
+            position: relative;
+            aspect-ratio: 4/5;
+            border-radius: 200px 200px 24px 24px;
+            overflow: hidden;
+            box-shadow:
+                0 40px 80px -20px rgba(14, 20, 48, 0.35),
+                0 0 0 1px var(--hairline);
+        }
+        @media (max-width: 768px) {
+            .video-frame { aspect-ratio: 4/5; border-radius: 100px 100px 16px 16px; }
+        }
+        .video-frame video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.05) saturate(1.1);
+        }
+        .video-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(14,20,48,0.15) 0%, rgba(14,20,48,0.05) 40%, rgba(14,20,48,0.55) 100%);
+            pointer-events: none;
+        }
+
+        .video-badge {
+            position: absolute;
+            bottom: 24px; left: 24px; right: 24px;
+            background: rgba(244, 237, 224, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .video-badge .badge-l { font-family: var(--editorial); font-style: italic; font-size: 16px; color: var(--ink); line-height: 1.2; }
+        .video-badge .badge-r { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--ash); }
+
+        .orbit-tag {
+            position: absolute;
+            background: var(--ink);
+            color: var(--cream);
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            padding: 12px 18px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+            box-shadow: 0 12px 28px -8px rgba(14, 20, 48, 0.4);
+        }
+        .orbit-tag.t1 { top: -22px; left: 20px; animation: float 6s ease-in-out infinite; }
+        .orbit-tag.t2 { bottom: 22%; right: -32px; background: var(--saffron); color: var(--ink); animation: float 8s 1s ease-in-out infinite; }
+        @media (max-width: 1024px) {
+            .orbit-tag.t2 { right: 12px; }
+        }
+        .orbit-tag .pulse-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--saffron);
+            box-shadow: 0 0 0 0 var(--saffron);
+            animation: pulse 2s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(251, 132, 42, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(251, 132, 42, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(251, 132, 42, 0); }
+        }
+
+        /* Decorative serif glyph background */
+        .deco-glyph {
+            position: absolute;
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 80, "WONK" 1;
+            font-size: 32rem;
+            line-height: 0.7;
+            color: var(--saffron);
+            opacity: 0.06;
+            font-weight: 400;
+            top: 8%;
+            right: -8%;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+        }
+
+        /* === MARQUEE === */
+        .marquee-band {
+            background: var(--ink);
+            color: var(--cream);
+            padding: 36px 0;
+            overflow: hidden;
+            position: relative;
+            border-top: 1px solid var(--ink-soft);
+            border-bottom: 1px solid var(--ink-soft);
+        }
+        .marquee-track {
+            display: inline-flex;
+            white-space: nowrap;
+            animation: ticker 35s linear infinite;
+            align-items: center;
+        }
+        .marquee-track > span {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+            font-size: 88px;
+            font-weight: 400;
+            line-height: 1;
+            padding: 0 32px;
+            color: var(--cream);
+            display: inline-flex;
+            align-items: center;
+        }
+        .marquee-track > span.italic { font-family: var(--editorial); font-style: italic; color: var(--saffron); font-size: 80px; }
+        .marquee-track > span::after {
+            content: '✻';
+            color: var(--saffron);
+            margin-left: 56px;
+            font-size: 32px;
+            display: inline-block;
+            vertical-align: middle;
+            opacity: 0.6;
+        }
+        @media (max-width: 768px) {
+            .marquee-track > span { font-size: 48px; }
+            .marquee-track > span.italic { font-size: 44px; }
+        }
+
+        /* === SECTION SHELL === */
+        .section {
+            padding: 140px 0;
+            position: relative;
+        }
+        @media (max-width: 768px) { .section { padding: 88px 0; } }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        @media (max-width: 768px) { .container { padding: 0 24px; } }
+
+        .section-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 60px;
+            align-items: end;
+            margin-bottom: 88px;
+        }
+        @media (max-width: 1024px) {
+            .section-header { grid-template-columns: 1fr; gap: 32px; margin-bottom: 56px; }
+        }
+        .section-header h2 {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 400;
+            font-size: clamp(36px, 5vw, 72px);
+            line-height: 0.98;
+            letter-spacing: -0.035em;
+            color: var(--ink);
+        }
+        .section-header h2 .italic { font-family: var(--editorial); font-style: italic; color: var(--ember); }
+
+        /* === MISSION CARDS === */
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--hairline);
+            border: 1px solid var(--hairline);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        @media (max-width: 768px) { .mission-grid { grid-template-columns: 1fr; } }
+
+        .mission-card {
+            background: var(--bone);
+            padding: 48px 36px;
+            position: relative;
+            transition: background 0.5s;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+        .mission-card:hover { background: var(--ink); }
+        .mission-card:hover * { color: var(--cream); }
+        .mission-card:hover .mc-num { color: var(--saffron); }
+        .mission-card:hover .mc-arrow { background: var(--saffron); color: var(--ink); transform: rotate(-45deg); }
+
+        .mc-num {
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            color: var(--saffron);
+            margin-bottom: auto;
+            transition: color 0.5s;
+        }
+        .mc-title {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: 30px;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin: 24px 0 16px;
+            color: var(--ink);
+            transition: color 0.5s;
+        }
+        .mc-title .ital { font-family: var(--editorial); font-style: italic; font-weight: 400; color: var(--ember); }
+        .mc-body {
+            font-size: 15px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            transition: color 0.5s;
+            margin-bottom: 24px;
+        }
+        .mc-arrow {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--cream);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+        }
+
+        /* === SERVICES EDITORIAL GRID === */
+        .services-stack { display: flex; flex-direction: column; }
+        .service-row {
+            display: grid;
+            grid-template-columns: 80px 0.8fr 1.4fr auto;
+            gap: 40px;
+            padding: 40px 0;
+            border-top: 1px solid var(--hairline);
+            position: relative;
+            transition: padding 0.4s;
+            cursor: pointer;
+        }
+        .service-row:last-child { border-bottom: 1px solid var(--hairline); }
+        @media (max-width: 1024px) {
+            .service-row { grid-template-columns: 1fr; gap: 12px; padding: 28px 0; }
+        }
+        .service-row::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--ink);
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1);
+            z-index: 0;
+        }
+        .service-row:hover::before { transform: scaleY(1); }
+        .service-row:hover * { color: var(--cream); position: relative; z-index: 1; }
+        .service-row:hover .sr-num { color: var(--saffron); }
+        .service-row:hover .sr-arrow svg { transform: translateX(8px) rotate(-45deg); }
+        .service-row > * { position: relative; z-index: 1; transition: color 0.4s; }
+
+        .sr-num {
+            font-family: var(--mono);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: var(--saffron);
+            padding-top: 12px;
+        }
+        .sr-title {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: 30px;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+        .sr-title .ital { font-family: var(--editorial); font-style: italic; font-weight: 400; }
+        .sr-desc {
+            font-size: 15px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            padding-top: 8px;
+            max-width: 560px;
+        }
+        .sr-arrow svg {
+            transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+            padding-top: 12px;
+        }
+
+        /* === FACULTY === */
+        .faculty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        @media (max-width: 768px) { .faculty-grid { grid-template-columns: 1fr; } }
+
+        .faculty-card {
+            position: relative;
+            background: var(--bone);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--hairline);
+            transform-style: preserve-3d;
+            transition: box-shadow 0.5s, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+            will-change: transform;
+        }
+        .faculty-card.tilt-active { transition: none; }
+        .faculty-card:nth-child(2) { margin-top: 40px; }
+        @media (max-width: 768px) { .faculty-card:nth-child(2) { margin-top: 0; } }
+        .faculty-card:hover { box-shadow: 0 40px 80px -24px rgba(14, 20, 48, 0.35); }
+
+        .fc-img-wrap {
+            aspect-ratio: 4/5;
+            background: var(--parchment);
+            position: relative;
+            overflow: hidden;
+        }
+        .fc-img-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(0.45) contrast(1.08) sepia(0.08);
+            transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.6s;
+        }
+        .faculty-card:hover .fc-img-wrap img { transform: scale(1.06); filter: grayscale(0) contrast(1.1) sepia(0); }
+        .fc-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 50%, rgba(14, 20, 48, 0.4) 100%);
+            pointer-events: none;
+        }
+        .fc-tag {
+            position: absolute;
+            top: 20px; left: 20px;
+            background: rgba(244, 237, 224, 0.92);
+            backdrop-filter: blur(12px);
+            color: var(--ink);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            padding: 6px 12px;
+            border-radius: 999px;
+        }
+        .fc-body { padding: 28px 28px 32px; }
+        .fc-name {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: 26px;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+        .fc-role {
+            font-family: var(--editorial);
+            font-style: italic;
+            font-size: 16px;
+            color: var(--ember);
+            margin-bottom: 16px;
+        }
+        .fc-bio { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+
+        /* === IMPACT QUOTE === */
+        #impact {
+            background: var(--ink);
+            color: var(--cream);
+            position: relative;
+            overflow: hidden;
+        }
+        #impact .deco-q {
+            position: absolute;
+            font-family: var(--editorial);
+            font-style: italic;
+            font-size: 48rem;
+            line-height: 0.7;
+            color: var(--saffron);
+            opacity: 0.08;
+            top: -8%;
+            left: -4%;
+            pointer-events: none;
+            user-select: none;
+        }
+        .quote-block {
+            position: relative;
+            z-index: 2;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .quote-text {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 0;
+            font-weight: 300;
+            font-size: clamp(32px, 4.5vw, 64px);
+            line-height: 1.08;
+            letter-spacing: -0.025em;
+            color: var(--cream);
+            margin-bottom: 48px;
+        }
+        .quote-text .h { color: var(--saffron); }
+        .quote-text .ital { font-family: var(--editorial); font-style: italic; font-weight: 400; color: var(--gold); }
+        .quote-cite {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--cream);
+            opacity: 0.7;
+        }
+        .quote-cite::before {
+            content: '';
+            display: inline-block;
+            width: 48px;
+            height: 1px;
+            background: var(--saffron);
+        }
+
+        /* === STATS COUNTER === */
+        .stats-band {
+            background: var(--cream);
+            padding: 88px 0;
+            border-top: 1px solid var(--hairline);
+            border-bottom: 1px solid var(--hairline);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        .stat-item { text-align: left; }
+        .stat-value {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+            font-weight: 400;
+            font-size: clamp(56px, 7vw, 96px);
+            line-height: 0.95;
+            color: var(--ink);
+            letter-spacing: -0.04em;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .stat-value .suffix { color: var(--saffron); font-family: var(--editorial); font-style: italic; font-size: 0.55em; }
+        .stat-label {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ash);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--hairline);
+        }
+
+        /* === CONTACT === */
+        #contact {
+            background: var(--bone);
+            position: relative;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+        @media (max-width: 1024px) { .contact-grid { grid-template-columns: 1fr; gap: 48px; } }
+
+        .contact-headline {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 400;
+            font-size: clamp(40px, 5.5vw, 84px);
+            line-height: 0.95;
+            letter-spacing: -0.035em;
+            color: var(--ink);
+        }
+        .contact-headline .ital { font-family: var(--editorial); font-style: italic; color: var(--ember); }
+
+        .contact-meta { margin-top: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+        @media (max-width: 600px) { .contact-meta { grid-template-columns: 1fr; } }
+        .cm-block { padding-top: 16px; border-top: 1px solid var(--hairline); }
+        .cm-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ash); margin-bottom: 8px; }
+        .cm-value { font-family: var(--display); font-variation-settings: "opsz" 24, "SOFT" 30; font-weight: 500; font-size: 18px; color: var(--ink); }
+
+        .form-card {
+            background: var(--ink);
+            color: var(--cream);
+            padding: 48px;
+            border-radius: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        @media (max-width: 600px) { .form-card { padding: 32px 24px; border-radius: 24px; } }
+
+        .form-card h3 {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 400;
+            font-size: 32px;
+            line-height: 1;
+            color: var(--cream);
+            margin-bottom: 8px;
+        }
+        .form-card h3 .ital { font-family: var(--editorial); font-style: italic; color: var(--saffron); }
+        .form-card .sub { font-size: 13px; color: rgba(244,237,224,0.6); margin-bottom: 32px; }
+
+        .ff {
+            display: block;
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(244,237,224,0.2);
+            padding: 16px 0 14px;
+            color: var(--cream);
+            font-family: var(--sans);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .ff::placeholder { color: rgba(244,237,224,0.4); }
+        .ff:focus { border-color: var(--saffron); }
+        .ff-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media (max-width: 600px) { .ff-row { grid-template-columns: 1fr; gap: 0; } }
+
+        .form-card .submit-row {
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .submit-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--saffron);
+            color: var(--ink);
+            border: none;
+            padding: 16px 24px;
+            border-radius: 999px;
+            font-family: var(--sans);
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.4), background 0.3s;
+        }
+        .submit-btn:hover { background: var(--cream); transform: translateX(4px); }
+        .submit-btn .a {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--saffron);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.4s;
+        }
+        .submit-btn:hover .a { transform: rotate(-45deg); }
+
+        /* === MODAL === */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(14, 20, 48, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+        }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--cream);
+            padding: 48px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 480px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            transform: translateY(20px) scale(0.96);
+            transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+        }
+        .modal-overlay.open .modal-content { transform: translateY(0) scale(1); }
+        .modal-content h3 {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: 36px;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+        .modal-content p { color: var(--ink-soft); margin-bottom: 24px; font-size: 15px; }
+        .check-icon {
+            width: 64px; height: 64px;
+            background: var(--saffron);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: var(--ink);
+        }
+
+        /* === FOOTER === */
+        footer {
+            background: var(--ink);
+            color: var(--cream);
+            padding: 88px 0 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            padding-bottom: 56px;
+            border-bottom: 1px solid var(--ink-soft);
+        }
+        @media (max-width: 768px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .footer-grid > div:first-child { grid-column: 1 / -1; }
+        }
+        .footer-big {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 400;
+            font-size: clamp(36px, 4vw, 56px);
+            line-height: 1.02;
+            letter-spacing: -0.03em;
+            color: var(--cream);
+            margin-bottom: 24px;
+        }
+        .footer-big .ital { font-family: var(--editorial); font-style: italic; color: var(--saffron); }
+        .footer h4 {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--saffron);
+            margin-bottom: 20px;
+        }
+        .footer ul li { margin-bottom: 10px; }
+        .footer ul li a {
+            font-size: 14px;
+            color: rgba(244, 237, 224, 0.7);
+            transition: color 0.3s, padding-left 0.3s;
+        }
+        .footer ul li a:hover { color: var(--saffron); padding-left: 6px; }
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 28px;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(244, 237, 224, 0.5);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-deco {
+            position: absolute;
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+            font-style: italic;
+            font-size: 30rem;
+            line-height: 0.7;
+            color: var(--saffron);
+            opacity: 0.04;
+            bottom: -18%;
+            right: -6%;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* === SCROLL REVEAL === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.2, 0.7, 0.2, 1), transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+        .reveal.in { opacity: 1; transform: translateY(0); }
+
+        /* === SCROLL PROGRESS === */
+        .scroll-prog {
+            position: fixed;
+            top: 0; left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--saffron);
+            z-index: 200;
+            transition: width 0.1s;
+        }
+
+        /* === MOBILE MENU === */
+        .mobile-toggle {
+            background: var(--ink);
+            color: var(--cream);
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #mobile-menu {
+            position: fixed;
+            inset: 0;
+            background: var(--ink);
+            color: var(--cream);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #mobile-menu.open { opacity: 1; visibility: visible; }
+        #mobile-menu nav { display: flex; flex-direction: column; gap: 32px; text-align: center; }
+        #mobile-menu nav a {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-size: 42px;
+            font-weight: 500;
+            color: var(--cream);
+            transition: color 0.3s;
+        }
+        #mobile-menu nav a:hover { color: var(--saffron); }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .reveal { opacity: 1; transform: none; }
+            body { cursor: auto; }
+            .cursor-dot, .cursor-ring { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="scroll-prog" id="scrollProg"></div>
+
+<!-- TICKER BAR -->
+<div id="ticker-bar">
+    <div class="ticker-track">
+        <span>◆ Established 2014 — Global Headquarters · New Delhi</span>
+        <span>Advising 12+ National Campaigns Worldwide</span>
+        <span>Research · Strategy · Statecraft</span>
+        <span>Trusted by Governments · Institutions · Leaders</span>
+        <span>◆ Established 2014 — Global Headquarters · New Delhi</span>
+        <span>Advising 12+ National Campaigns Worldwide</span>
+        <span>Research · Strategy · Statecraft</span>
+        <span>Trusted by Governments · Institutions · Leaders</span>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header id="main-header">
+    <div class="container" style="padding-top: 18px; padding-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+        <a href="#hero" class="logo-mark" data-hover>
+            <img src="assets/img/logo.png" alt="IIPGM" class="logo-image">
+            <span class="logo-divider"></span>
+            <div class="logo-tag">
+                <span class="lt1">Est · 2014</span>
+                <span class="lt2">Creating Leaders</span>
+            </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-10">
+            <a href="#hero" class="nav-link active" data-hover>Home</a>
+            <a href="services.html" class="nav-link" data-hover>Services</a>
+            <a href="#about" class="nav-link" data-hover>Mission</a>
+            <a href="#faculty" class="nav-link" data-hover>Faculty</a>
+            <a href="#contact" class="nav-link" data-hover>Contact</a>
+            <button id="open-form-desktop" class="pill-btn" data-hover>
+                <span>Initiate Enquiry</span>
+                <span class="arrow">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </span>
+            </button>
+        </nav>
+
+        <button id="menu-toggle" class="lg:hidden mobile-toggle" aria-label="Toggle menu">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 13h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+    </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+    <nav>
+        <a href="#hero">Home</a>
+        <a href="services.html">Services</a>
+        <a href="#about">Mission</a>
+        <a href="#faculty">Faculty</a>
+        <a href="#contact">Contact</a>
+        <button id="open-form-mobile" class="pill-btn" style="margin: 24px auto 0; background: var(--saffron); color: var(--ink); border-color: var(--saffron);">
+            <span>Initiate Enquiry</span>
+            <span class="arrow" style="background: var(--ink); color: var(--saffron);">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+        </button>
+    </nav>
+</div>
+
+<main>
+    <!-- HERO -->
+    <section id="hero">
+        <div class="hero-grid-pattern"></div>
+        <span class="deco-glyph">I</span>
+        <div class="hero-grid">
+            <div class="hero-left">
+                <span class="eyebrow">The Indian Institute · Est. 2014</span>
+                <h1 class="hero-headline" id="hero-headline">
+                    <span class="word-reveal"><span style="animation-delay: 0.1s">Transforming</span></span>
+                    <span class="word-reveal"><span class="italic-word" style="animation-delay: 0.2s">great</span></span>
+                    <span class="word-reveal"><span style="animation-delay: 0.3s">visions</span></span><br>
+                    <span class="word-reveal"><span style="animation-delay: 0.5s">into</span></span>
+                    <span class="word-reveal"><span class="underline-word" style="animation-delay: 0.65s">enduring</span></span><br>
+                    <span class="word-reveal"><span class="italic-word" style="animation-delay: 0.85s">accomplishments.</span></span>
+                </h1>
+                <p class="hero-sub">
+                    A sovereign institute advising the world's largest democratic processes — crafting strategy, statecraft, and tomorrow's most consequential political leaders.
+                </p>
+                <div class="hero-cta-row">
+                    <a href="#featured-services" class="pill-btn" data-hover>
+                        <span>Explore the Portfolio</span>
+                        <span class="arrow">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </span>
+                    </a>
+                    <a href="#about" class="pill-btn outline" data-hover>
+                        <span>The Institute</span>
+                        <span class="arrow" style="background: var(--ink); color: var(--cream);">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="hero-meta">
+                    <div class="hero-meta-item">
+                        <div class="label">Campaigns Advised</div>
+                        <div class="val" data-counter="22"><span class="plus">+</span>22</div>
+                    </div>
+                    <div class="hero-meta-item">
+                        <div class="label">Sovereign Nations</div>
+                        <div class="val" data-counter="11"><span class="plus">+</span>11</div>
+                    </div>
+                    <div class="hero-meta-item">
+                        <div class="label">Years of Practice</div>
+                        <div class="val" data-counter="10"><span class="plus">+</span>10</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <div class="orbit-tag t1">
+                    <span class="pulse-dot"></span>
+                    <span>Live · In Session</span>
+                </div>
+                <div class="orbit-tag t2">
+                    <span>★</span>
+                    <span>Trusted Partners</span>
+                </div>
+                <div class="video-frame">
+                    <video autoplay muted loop playsinline>
+                        <source src="assets/video/video.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-badge">
+                        <div class="badge-l">"The architecture of <em>great</em> democracies."</div>
+                        <div class="badge-r">— IIPGM<br>Newsroom</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MARQUEE BAND -->
+    <div class="marquee-band">
+        <div class="marquee-track">
+            <span>Research</span>
+            <span class="italic">strategy</span>
+            <span>Statecraft</span>
+            <span class="italic">leadership</span>
+            <span>Diplomacy</span>
+            <span class="italic">policy</span>
+            <span>Research</span>
+            <span class="italic">strategy</span>
+            <span>Statecraft</span>
+            <span class="italic">leadership</span>
+            <span>Diplomacy</span>
+            <span class="italic">policy</span>
+        </div>
+    </div>
+
+    <!-- MISSION -->
+    <section id="about" class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <span class="section-no">01 — Our Mission</span>
+                </div>
+                <h2>
+                    Producing better-qualified, <span class="italic">ethical</span>, and more representative public leaders — in India, and across the globe.
+                </h2>
+            </div>
+
+            <div class="mission-grid reveal">
+                <div class="mission-card" data-hover>
+                    <span class="mc-num">↳ I — Mandate</span>
+                    <h3 class="mc-title">Global <span class="ital">leadership</span> in political consulting.</h3>
+                    <p class="mc-body">A sovereign authority in modern democratic strategy — advising campaigns, governments, and institutional actors on the architecture of public will.</p>
+                    <span class="mc-arrow">
+                        <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </div>
+                <div class="mission-card" data-hover>
+                    <span class="mc-num">↳ II — Practice</span>
+                    <h3 class="mc-title">Policy <span class="ital">excellence</span> for the post-modern state.</h3>
+                    <p class="mc-body">Specialist policy-making services to governments, corporate organisations, and institutions — informed by research and proven through outcome.</p>
+                    <span class="mc-arrow">
+                        <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </div>
+                <div class="mission-card" data-hover>
+                    <span class="mc-num">↳ III — Pulpit</span>
+                    <h3 class="mc-title">Public <span class="ital">engagement</span> in service of the republic.</h3>
+                    <p class="mc-body">Specialist support in public relations, communications, and crisis stewardship — for the leaders entrusted with consequential decisions.</p>
+                    <span class="mc-arrow">
+                        <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED SERVICES -->
+    <section id="featured-services" class="section" style="background: var(--bone); padding-top: 140px;">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <span class="section-no">02 — Strategic Pillars</span>
+                </div>
+                <h2>
+                    The four <span class="italic">disciplines</span> upon which a modern political institute is built.
+                </h2>
+            </div>
+
+            <div class="services-stack reveal">
+                <a href="services.html" class="service-row" data-hover>
+                    <span class="sr-num">01 / 04</span>
+                    <h3 class="sr-title">Political <span class="ital">Consulting</span></h3>
+                    <p class="sr-desc">Advisory and assistance for political campaigns: mass-media production, opposition research, voter polling, field strategy, and turnout architecture — built on first-rate intelligence.</p>
+                    <span class="sr-arrow">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15.5" stroke="currentColor"/><path d="M12 20L20 12M20 12H14M20 12V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </a>
+                <a href="services.html" class="service-row" data-hover>
+                    <span class="sr-num">02 / 04</span>
+                    <h3 class="sr-title">Campaign <span class="ital">Management</span></h3>
+                    <p class="sr-desc">Strategy identification, campaign design, planning, controlled testing, monitoring, and outcome analysis — orchestrated as a single instrument of democratic intent.</p>
+                    <span class="sr-arrow">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15.5" stroke="currentColor"/><path d="M12 20L20 12M20 12H14M20 12V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </a>
+                <a href="services.html" class="service-row" data-hover>
+                    <span class="sr-num">03 / 04</span>
+                    <h3 class="sr-title">Opinion <span class="ital">Research</span></h3>
+                    <p class="sr-desc">Disciplined collection of public sentiment — surfaces the views, beliefs, and motivations from which sound political judgement can be inferred at scale.</p>
+                    <span class="sr-arrow">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15.5" stroke="currentColor"/><path d="M12 20L20 12M20 12H14M20 12V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </a>
+                <a href="services.html" class="service-row" data-hover>
+                    <span class="sr-num">04 / 04</span>
+                    <h3 class="sr-title">Leadership <span class="ital">Training</span></h3>
+                    <p class="sr-desc">Cultivation of qualified, ethical, accessible, and representative public leaders — formal development for those identified to shape the next chapter of governance.</p>
+                    <span class="sr-arrow">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15.5" stroke="currentColor"/><path d="M12 20L20 12M20 12H14M20 12V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </a>
+            </div>
+
+            <div class="reveal" style="margin-top: 64px; display: flex; justify-content: center;">
+                <a href="services.html" class="pill-btn" data-hover>
+                    <span>View Full Portfolio · 22 Services</span>
+                    <span class="arrow">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FACULTY -->
+    <section id="faculty" class="section">
+        <div class="container">
+            <div class="section-header reveal">
+                <div>
+                    <span class="section-no">03 — Distinguished Faculty</span>
+                </div>
+                <h2>
+                    An <span class="italic">international</span> assembly of strategists, policy architects, and proven leaders.
+                </h2>
+            </div>
+
+            <div class="faculty-grid">
+                <article class="faculty-card reveal tilt" data-hover>
+                    <div class="fc-img-wrap">
+                        <span class="fc-tag">Technology · Statecraft</span>
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Edgar Zorilla" loading="lazy">
+                    </div>
+                    <div class="fc-body">
+                        <h3 class="fc-name">Mr. Edgar Zorilla</h3>
+                        <div class="fc-role">Co-founder · Global E-Voting Solutions</div>
+                        <p class="fc-bio">A global authority on technology systems for electronic voting (Smartmatic). Architect of our institutional technology focus and digital integrity practice.</p>
+                    </div>
+                </article>
+
+                <article class="faculty-card reveal tilt" data-hover>
+                    <div class="fc-img-wrap">
+                        <span class="fc-tag">Campaign Strategy</span>
+                        <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Amresh K" loading="lazy">
+                    </div>
+                    <div class="fc-body">
+                        <h3 class="fc-name">Mr. Amresh K</h3>
+                        <div class="fc-role">National Campaign Strategist · India 2014</div>
+                        <p class="fc-bio">National core-team member of the historic 2014 general elections. Specialises in campaign architecture, electoral mathematics, and constituency design.</p>
+                    </div>
+                </article>
+
+                <article class="faculty-card reveal tilt" data-hover>
+                    <div class="fc-img-wrap">
+                        <span class="fc-tag">Governance · Strategy</span>
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Ms. Riya Sharma" loading="lazy">
+                    </div>
+                    <div class="fc-body">
+                        <h3 class="fc-name">Ms. Riya Sharma</h3>
+                        <div class="fc-role">Governance & Corporate Strategy</div>
+                        <p class="fc-bio">Governance professional formerly with a Big Four practice — consulted with leading multinationals on corporate strategy, board governance, and stakeholder mapping.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- IMPACT QUOTE -->
+    <section id="impact" class="section">
+        <span class="deco-q">"</span>
+        <div class="container">
+            <div class="quote-block reveal">
+                <span class="eyebrow" style="color: var(--saffron); margin-bottom: 32px; display: inline-flex;">04 — Principle of Practice</span>
+                <p class="quote-text">
+                    "The <span class="ital">quality</span> of research will produce the quality in analysis — which will enable the quality in <span class="h">strategies</span> for execution, and impacting the significant <span class="ital">vote share</span>."
+                </p>
+                <div class="quote-cite">KIGP — Assurance Principle</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats-band reveal">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value"><span data-count="22">0</span><span class="suffix">+</span></div>
+                    <div class="stat-label">Strategic Services</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><span data-count="11">0</span><span class="suffix">/nations</span></div>
+                    <div class="stat-label">Global Reach</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><span data-count="240">0</span><span class="suffix">M+</span></div>
+                    <div class="stat-label">Voters Engaged</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><span data-count="98">0</span><span class="suffix">%</span></div>
+                    <div class="stat-label">Client Retention</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+        <div class="container">
+            <span class="section-no reveal">05 — Initiate Engagement</span>
+            <div class="contact-grid" style="margin-top: 24px;">
+                <div class="reveal">
+                    <h2 class="contact-headline">
+                        Let us <span class="ital">begin</span> the conversation.
+                    </h2>
+                    <p style="font-size: 17px; color: var(--ink-soft); max-width: 480px; margin-top: 24px;">
+                        Whether you represent a national campaign, a sovereign government, or an institutional initiative — our office welcomes correspondence.
+                    </p>
+
+                    <div class="contact-meta">
+                        <div class="cm-block">
+                            <div class="cm-label">General Office</div>
+                            <div class="cm-value">info@iipgm.org</div>
+                        </div>
+                        <div class="cm-block">
+                            <div class="cm-label">Strategy Desk</div>
+                            <div class="cm-value">amresh@kigp.org</div>
+                        </div>
+                        <div class="cm-block">
+                            <div class="cm-label">Headquarters</div>
+                            <div class="cm-value">IIPGM Tower, New Delhi</div>
+                        </div>
+                        <div class="cm-block">
+                            <div class="cm-label">Working Hours</div>
+                            <div class="cm-value">Mon — Fri · 09:00 IST</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-card reveal">
+                    <h3>Submit an <span class="ital">enquiry</span></h3>
+                    <p class="sub">Reviewed personally by the Office of the Director.</p>
+                    <form id="contact-form">
+                        <div class="ff-row">
+                            <input type="text" id="name" class="ff" placeholder="Full name" required>
+                            <input type="email" id="email" class="ff" placeholder="Email address" required>
+                        </div>
+                        <input type="text" id="subject" class="ff" placeholder="Subject / area of interest" required>
+                        <textarea id="message" class="ff" rows="3" placeholder="Your message" required style="resize: none;"></textarea>
+
+                        <div class="submit-row">
+                            <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(244,237,224,0.5);">Confidential · Encrypted</span>
+                            <button type="submit" class="submit-btn" data-hover>
+                                <span>Send</span>
+                                <span class="a">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- MODALS -->
+<div id="form-modal" class="modal-overlay">
+    <div class="form-card" style="max-width: 600px; width: 92%; position: relative;">
+        <button id="close-form-modal" style="position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; border-radius: 50%; background: rgba(244,237,224,0.1); color: var(--cream); display: flex; align-items: center; justify-content: center;" data-hover>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <h3>Initiate an <span class="ital">enquiry</span></h3>
+        <p class="sub">Reviewed personally by the Office of the Director.</p>
+        <form id="modal-form">
+            <div class="ff-row">
+                <input type="text" class="ff" placeholder="Full name" required>
+                <input type="email" class="ff" placeholder="Email address" required>
+            </div>
+            <input type="text" class="ff" placeholder="Subject / area of interest" required>
+            <textarea class="ff" rows="3" placeholder="Your message" required style="resize: none;"></textarea>
+            <div class="submit-row">
+                <span style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(244,237,224,0.5);">Confidential</span>
+                <button type="submit" class="submit-btn">
+                    <span>Send</span>
+                    <span class="a">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="success-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="check-icon">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M8 16l5 5 11-12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Received <span class="font-editorial" style="color: var(--ember);">— with thanks.</span></h3>
+        <p>Your enquiry has been delivered to the office. A member of the institute will respond personally within two working days.</p>
+        <button id="close-success-modal" class="pill-btn" style="margin: 0 auto;">
+            <span>Close</span>
+            <span class="arrow">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+        </button>
+    </div>
+</div>
+
+<footer>
+    <span class="footer-deco">✻</span>
+    <div class="container" style="position: relative; z-index: 2;">
+        <div class="footer-grid">
+            <div>
+                <p class="footer-big">
+                    Reliable & trusted partners — for transforming <span class="ital">great visions</span> into greatest accomplishments.
+                </p>
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <a href="#" aria-label="LinkedIn" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--ink-soft); display: inline-flex; align-items: center; justify-content: center; color: var(--cream); transition: all 0.3s;" onmouseover="this.style.background='var(--saffron)'; this.style.borderColor='var(--saffron)'; this.style.color='var(--ink)';" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--ink-soft)'; this.style.color='var(--cream)';" data-hover>
+                        <svg fill="currentColor" width="16" height="16" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.7c-.9 0-1.5-.6-1.5-1.4 0-.8.6-1.4 1.5-1.4s1.5.6 1.5 1.4c0 .8-.6 1.4-1.5 1.4zm12.5 12.7h-3v-5.6c0-3.1 3.5-2.8 3.5 0v5.6h-.5z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Twitter" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--ink-soft); display: inline-flex; align-items: center; justify-content: center; color: var(--cream); transition: all 0.3s;" onmouseover="this.style.background='var(--saffron)'; this.style.borderColor='var(--saffron)'; this.style.color='var(--ink)';" onmouseout="this.style.background='transparent'; this.style.borderColor='var(--ink-soft)'; this.style.color='var(--cream)';" data-hover>
+                        <svg fill="currentColor" width="16" height="16" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.799-1.574 2.164-2.715-.951.579-2.001.998-3.12 1.229C19.866 2.388 18.17 1 16.297 1c-3.593 0-6.495 2.902-6.495 6.495 0 .509.057 1.003.17 1.481-5.39-2.705-10.169-5.698-13.363-9.592-.56.963-.88 2.083-.88 3.292 0 2.254 1.144 4.248 2.887 5.415-1.06-.033-2.052-.325-2.923-.809-.002.027-.002.055-.002.083 0 3.14 2.234 5.768 5.21 6.368-.542.147-1.113.224-1.693.224-.415 0-.819-.04-1.215-.116.828 2.587 3.255 4.474 6.136 4.526-2.22 1.745-5.013 2.793-8.067 2.793-.523 0-1.042-.031-1.554-.09C1.724 22.015 5.567 23 9.7 23c6.643 0 12.217-5.11 12.217-12.035 0-.184-.004-.368-.012-.551.838-.607 1.564-1.365 2.148-2.234z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div>
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#hero" data-hover>Home</a></li>
+                    <li><a href="services.html" data-hover>Services</a></li>
+                    <li><a href="#about" data-hover>Mission</a></li>
+                    <li><a href="#faculty" data-hover>Faculty</a></li>
+                    <li><a href="#contact" data-hover>Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Offices</h4>
+                <ul>
+                    <li><a href="#" data-hover>New Delhi · HQ</a></li>
+                    <li><a href="#" data-hover>London · EU Office</a></li>
+                    <li><a href="#" data-hover>Singapore · APAC</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="mailto:info@iipgm.org" data-hover>info@iipgm.org</a></li>
+                    <li><a href="mailto:amresh@kigp.org" data-hover>amresh@kigp.org</a></li>
+                    <li><a href="mailto:yunus.nasir@kigp.org" data-hover>yunus.nasir@kigp.org</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 IIPGM · All Rights Reserved</span>
+            <span>Technology · Innovation · Leadership</span>
+            <span><a href="#" data-hover style="color: rgba(244,237,224,0.5);">Privacy</a> · <a href="#" data-hover style="color: rgba(244,237,224,0.5);">Terms</a></span>
+        </div>
+    </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // === CUSTOM CURSOR ===
+    const cursorDot = document.getElementById('cursorDot');
+    const cursorRing = document.getElementById('cursorRing');
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+    if (!prefersReducedMotion && window.innerWidth > 1024) {
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
+        });
+
+        const animateRing = () => {
+            ringX += (mouseX - ringX) * 0.18;
+            ringY += (mouseY - ringY) * 0.18;
+            cursorRing.style.left = ringX + 'px';
+            cursorRing.style.top = ringY + 'px';
+            requestAnimationFrame(animateRing);
+        };
+        animateRing();
+
+        document.querySelectorAll('[data-hover]').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+        });
+    }
+
+    // === SCROLL PROGRESS ===
+    const scrollProg = document.getElementById('scrollProg');
+    window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+        scrollProg.style.width = pct + '%';
+
+        const header = document.getElementById('main-header');
+        if (window.scrollY > 20) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+    });
+
+    // === REVEAL ===
+    if (!prefersReducedMotion) {
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('in');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    } else {
+        document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    }
+
+    // === COUNTERS ===
+    const animateCount = (el) => {
+        const target = parseInt(el.dataset.count);
+        const dur = 1800;
+        const start = performance.now();
+        const step = (now) => {
+            const p = Math.min((now - start) / dur, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.floor(target * eased);
+            if (p < 1) requestAnimationFrame(step);
+            else el.textContent = target;
+        };
+        requestAnimationFrame(step);
+    };
+
+    const countObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                animateCount(e.target);
+                countObs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => countObs.observe(el));
+
+    // === MOBILE MENU ===
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuToggle.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+    // === SMOOTH SCROLL ===
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href.length > 1 && document.querySelector(href)) {
+                e.preventDefault();
+                document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // === MODALS ===
+    const formModal = document.getElementById('form-modal');
+    const successModal = document.getElementById('success-modal');
+    const open = (m) => { m.classList.add('open'); document.body.style.overflow = 'hidden'; };
+    const close = (m) => { m.classList.remove('open'); document.body.style.overflow = ''; };
+
+    document.getElementById('open-form-desktop').addEventListener('click', () => open(formModal));
+    document.getElementById('open-form-mobile').addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        open(formModal);
+    });
+    document.getElementById('close-form-modal').addEventListener('click', () => close(formModal));
+    document.getElementById('close-success-modal').addEventListener('click', () => close(successModal));
+
+    [formModal, successModal].forEach(m => {
+        m.addEventListener('click', (e) => {
+            if (e.target === m) close(m);
+        });
+    });
+
+    const handleSubmit = (form, source) => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const span = btn.querySelector('span');
+            const orig = span.textContent;
+            span.textContent = 'Sending…';
+            btn.disabled = true;
+            setTimeout(() => {
+                form.reset();
+                span.textContent = orig;
+                btn.disabled = false;
+                if (source === 'modal') close(formModal);
+                open(successModal);
+            }, 1500);
+        });
+    };
+    handleSubmit(document.getElementById('contact-form'), 'inline');
+    handleSubmit(document.getElementById('modal-form'), 'modal');
+
+    // === HERO SPOTLIGHT TRACKING ===
+    const hero = document.getElementById('hero');
+    if (hero && !prefersReducedMotion) {
+        hero.addEventListener('mousemove', (e) => {
+            const r = hero.getBoundingClientRect();
+            hero.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+            hero.style.setProperty('--my', (e.clientY - r.top) + 'px');
+            hero.style.setProperty('--spot-opacity', '1');
+        });
+        hero.addEventListener('mouseleave', () => {
+            hero.style.setProperty('--spot-opacity', '0');
+        });
+    }
+
+    // === MAGNETIC BUTTONS ===
+    if (!prefersReducedMotion && window.innerWidth > 1024) {
+        document.querySelectorAll('.pill-btn, .submit-btn').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const r = btn.getBoundingClientRect();
+                const x = e.clientX - r.left - r.width / 2;
+                const y = e.clientY - r.top - r.height / 2;
+                btn.style.transform = `translate(${x * 0.18}px, ${y * 0.25}px)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = '';
+            });
+        });
+    }
+
+    // === FACULTY CARD 3D TILT ===
+    if (!prefersReducedMotion && window.innerWidth > 1024) {
+        document.querySelectorAll('.tilt').forEach(card => {
+            const img = card.querySelector('img');
+            card.addEventListener('mouseenter', () => card.classList.add('tilt-active'));
+            card.addEventListener('mousemove', (e) => {
+                const r = card.getBoundingClientRect();
+                const px = (e.clientX - r.left) / r.width - 0.5;
+                const py = (e.clientY - r.top) / r.height - 0.5;
+                card.style.transform = `perspective(1200px) rotateX(${-py * 6}deg) rotateY(${px * 6}deg) translateY(-6px)`;
+                if (img) img.style.transform = `scale(1.08) translate(${px * -16}px, ${py * -16}px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('tilt-active');
+                card.style.transform = '';
+                if (img) img.style.transform = '';
+            });
+        });
+    }
+});
+</script>
+</body>
+</html>
