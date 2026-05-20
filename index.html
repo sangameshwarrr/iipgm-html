@@ -482,6 +482,11 @@
             box-shadow:
                 0 40px 80px -20px rgba(14, 20, 48, 0.35),
                 0 0 0 1px var(--hairline);
+            isolation: isolate;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: linear-gradient(white, white);
+            transform: translateZ(0);
+            will-change: transform;
         }
         @media (max-width: 768px) {
             .video-frame { aspect-ratio: 4/5; border-radius: 100px 100px 16px 16px; }
@@ -491,6 +496,7 @@
             height: 100%;
             object-fit: cover;
             filter: contrast(1.05) saturate(1.1);
+            border-radius: inherit;
         }
         .video-frame::after {
             content: '';
@@ -848,35 +854,51 @@
             pointer-events: none;
         }
 
-        /* Flip trigger button */
+        /* Flip trigger buttons — kept OUTSIDE .faculty-inner so 3D transforms don't break hit-testing in Chrome */
         .flip-toggle {
             position: absolute;
-            bottom: 16px;
-            right: 16px;
+            top: 18px;
+            right: 18px;
             width: 44px; height: 44px;
             border-radius: 50%;
-            background: var(--saffron);
-            color: var(--ink);
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4), background 0.3s;
-            z-index: 4;
-            box-shadow: 0 8px 20px -6px rgba(251, 132, 42, 0.5);
+            z-index: 6;
+            transform: translateZ(0);
         }
-        .flip-toggle:hover { transform: scale(1.1) rotate(90deg); background: var(--cream); }
+        .flip-toggle.front {
+            background: var(--saffron);
+            color: var(--ink);
+            box-shadow: 0 8px 20px -6px rgba(251, 132, 42, 0.55);
+            opacity: 1;
+            transition: opacity 0.35s 0.45s, transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4), background 0.3s;
+        }
+        .flip-toggle.front:hover { transform: scale(1.1) rotate(90deg); background: var(--cream); }
+
         .flip-toggle.back {
-            position: static;
-            background: transparent;
+            background: rgba(244, 237, 224, 0.08);
             border: 1px solid rgba(244, 237, 224, 0.25);
             color: var(--cream);
-            width: 36px; height: 36px;
-            box-shadow: none;
-            margin-left: auto;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s, transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.4), background 0.3s, border-color 0.3s, color 0.3s;
         }
-        .flip-toggle.back:hover { background: var(--saffron); border-color: var(--saffron); color: var(--ink); transform: scale(1.05) rotate(90deg); }
+        .flip-toggle.back:hover { background: var(--saffron); border-color: var(--saffron); color: var(--ink); transform: scale(1.08) rotate(90deg); }
+
+        .faculty-card.flipped .flip-toggle.front {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.4s, background 0.3s;
+        }
+        .faculty-card.flipped .flip-toggle.back {
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.35s 0.45s, transform 0.4s, background 0.3s, border-color 0.3s, color 0.3s;
+        }
 
         /* Back card content */
         .fb-head {
@@ -2654,11 +2676,6 @@
                             <div class="fc-img-wrap">
                                 <span class="fc-tag">Technology · Statecraft</span>
                                 <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Edgar Zorilla" loading="lazy">
-                                <button class="flip-toggle front" aria-label="Reveal profile of Edgar Zorilla">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
                             </div>
                             <div class="fc-body">
                                 <h3 class="fc-name">Mr. Edgar Zorilla</h3>
@@ -2669,11 +2686,6 @@
                         <div class="faculty-back">
                             <div class="fb-head">
                                 <span class="fb-eyebrow">Profile · Reverse</span>
-                                <button class="flip-toggle back" aria-label="Close profile">
-                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
                             </div>
                             <h3 class="fb-name">Edgar Zorilla</h3>
                             <div class="fb-role">Co-founder · Smartmatic</div>
@@ -2711,6 +2723,12 @@
                             </div>
                         </div>
                     </div>
+                    <button class="flip-toggle front" type="button" aria-label="Reveal profile of Edgar Zorilla">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="flip-toggle back" type="button" aria-label="Close profile">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    </button>
                 </article>
 
                 <article class="faculty-card reveal tilt" data-hover>
@@ -2719,11 +2737,6 @@
                             <div class="fc-img-wrap">
                                 <span class="fc-tag">Campaign Strategy</span>
                                 <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Mr. Amresh K" loading="lazy">
-                                <button class="flip-toggle front" aria-label="Reveal profile of Amresh K">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
                             </div>
                             <div class="fc-body">
                                 <h3 class="fc-name">Mr. Amresh K</h3>
@@ -2734,11 +2747,6 @@
                         <div class="faculty-back">
                             <div class="fb-head">
                                 <span class="fb-eyebrow">Profile · Reverse</span>
-                                <button class="flip-toggle back" aria-label="Close profile">
-                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
                             </div>
                             <h3 class="fb-name">Amresh K</h3>
                             <div class="fb-role">National Core Team · 2014 Mandate</div>
@@ -2776,6 +2784,12 @@
                             </div>
                         </div>
                     </div>
+                    <button class="flip-toggle front" type="button" aria-label="Reveal profile of Amresh K">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="flip-toggle back" type="button" aria-label="Close profile">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    </button>
                 </article>
 
                 <article class="faculty-card reveal tilt" data-hover>
@@ -2784,11 +2798,6 @@
                             <div class="fc-img-wrap">
                                 <span class="fc-tag">Governance · Strategy</span>
                                 <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=1000&fit=crop&crop=faces&q=85" alt="Ms. Riya Sharma" loading="lazy">
-                                <button class="flip-toggle front" aria-label="Reveal profile of Riya Sharma">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
                             </div>
                             <div class="fc-body">
                                 <h3 class="fc-name">Ms. Riya Sharma</h3>
@@ -2799,11 +2808,6 @@
                         <div class="faculty-back">
                             <div class="fb-head">
                                 <span class="fb-eyebrow">Profile · Reverse</span>
-                                <button class="flip-toggle back" aria-label="Close profile">
-                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                        <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                                    </svg>
-                                </button>
                             </div>
                             <h3 class="fb-name">Riya Sharma</h3>
                             <div class="fb-role">Big Four · Board Advisory</div>
@@ -2841,6 +2845,12 @@
                             </div>
                         </div>
                     </div>
+                    <button class="flip-toggle front" type="button" aria-label="Reveal profile of Riya Sharma">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="flip-toggle back" type="button" aria-label="Close profile">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    </button>
                 </article>
             </div>
         </div>
