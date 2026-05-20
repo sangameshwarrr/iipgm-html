@@ -807,7 +807,7 @@
             border: 1px solid var(--hairline);
             overflow: hidden;
         }
-        .faculty-front { position: relative; }
+        .faculty-front { position: relative; pointer-events: auto; }
         .faculty-back {
             position: absolute;
             inset: 0;
@@ -819,7 +819,10 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            pointer-events: none;
         }
+        .faculty-card.flipped .faculty-front { pointer-events: none; }
+        .faculty-card.flipped .faculty-back { pointer-events: auto; }
         @media (max-width: 768px) {
             .faculty-back { padding: 28px 24px; }
         }
@@ -1857,6 +1860,354 @@
         .cd-dots button.active { background: var(--saffron); width: 40px; }
         .cd-dots button:hover { background: rgba(244, 237, 224, 0.4); }
 
+        /* === TIMELINE — SCROLL-SCRUBBED TRAJECTORY === */
+        .timeline-pinned {
+            position: relative;
+            background: var(--cream);
+        }
+        .timeline-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            min-height: 720px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .timeline-sticky::before {
+            content: '';
+            position: absolute;
+            top: 50%; right: -8%;
+            transform: translateY(-50%);
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(251,132,42,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .timeline-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            gap: 32px;
+            height: 100%;
+            padding-top: 88px;
+            padding-bottom: 56px;
+        }
+        @media (max-width: 768px) {
+            .timeline-container { padding: 88px 24px 40px; gap: 24px; }
+        }
+
+        .timeline-head { max-width: 900px; }
+        .timeline-title {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 400;
+            font-size: clamp(34px, 4.4vw, 64px);
+            line-height: 0.98;
+            letter-spacing: -0.035em;
+            color: var(--ink);
+            margin-top: 12px;
+        }
+        .timeline-title .ital { font-family: var(--editorial); font-style: italic; color: var(--ember); }
+
+        /* Year markers track */
+        .timeline-track {
+            position: relative;
+            height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        .track-line {
+            position: absolute;
+            left: 0; right: 0;
+            top: 50%;
+            height: 1px;
+            background: var(--hairline);
+            transform: translateY(-50%);
+        }
+        .track-progress {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            height: 1px;
+            background: var(--saffron);
+            transform: translateY(-50%);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px var(--saffron);
+        }
+        .timeline-markers {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            z-index: 2;
+        }
+        .track-marker {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 8px;
+            font-family: inherit;
+            position: relative;
+        }
+        .tm-year {
+            font-family: var(--mono);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            color: var(--ash);
+            transition: color 0.3s, font-size 0.3s, transform 0.3s;
+        }
+        .tm-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--bone);
+            border: 1.5px solid var(--ash);
+            transition: all 0.4s cubic-bezier(0.4, 1.5, 0.3, 1);
+            position: relative;
+            z-index: 2;
+        }
+        .track-marker.passed .tm-dot { background: var(--saffron); border-color: var(--saffron); }
+        .track-marker.active .tm-dot {
+            background: var(--saffron);
+            border-color: var(--saffron);
+            transform: scale(1.6);
+            box-shadow: 0 0 0 6px rgba(251, 132, 42, 0.15);
+        }
+        .track-marker.passed .tm-year { color: var(--ink); }
+        .track-marker.active .tm-year {
+            color: var(--ember);
+            font-weight: 600;
+            transform: translateY(-2px);
+        }
+        .track-marker:hover .tm-year { color: var(--ember); }
+
+        /* Stage — active milestone display */
+        .timeline-stage {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--bone);
+            border: 1px solid var(--hairline);
+            min-height: 380px;
+        }
+        @media (max-width: 768px) { .timeline-stage { min-height: 480px; } }
+
+        .ts-frame {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 0;
+        }
+        @media (max-width: 900px) { .ts-frame { grid-template-columns: 1fr; grid-template-rows: 220px 1fr; } }
+
+        .ts-imagery {
+            position: relative;
+            overflow: hidden;
+            background: var(--parchment);
+        }
+        .ts-imagery::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 50%, rgba(14, 20, 48, 0.25) 100%);
+            pointer-events: none;
+        }
+        .ts-img {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+            transform: scale(1.05);
+        }
+        .ts-img img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: contrast(1.08) saturate(0.95);
+        }
+        .ts-img.active { opacity: 1; transform: scale(1); }
+
+        .ts-imagery .ts-badge {
+            position: absolute;
+            top: 24px; left: 24px;
+            background: rgba(244, 237, 224, 0.92);
+            backdrop-filter: blur(12px);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ink);
+            padding: 7px 14px;
+            border-radius: 999px;
+            z-index: 3;
+        }
+
+        .ts-content {
+            position: relative;
+            padding: 48px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+        @media (max-width: 768px) { .ts-content { padding: 32px 28px; } }
+
+        .ts-slide {
+            position: absolute;
+            inset: 0;
+            padding: 48px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+            pointer-events: none;
+        }
+        @media (max-width: 768px) { .ts-slide { padding: 32px 28px; } }
+        .ts-slide.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .ts-year {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+            font-weight: 400;
+            font-size: clamp(56px, 7vw, 96px);
+            line-height: 0.85;
+            color: var(--saffron);
+            letter-spacing: -0.04em;
+            margin-bottom: 4px;
+        }
+        .ts-bar {
+            width: 48px;
+            height: 1px;
+            background: var(--ember);
+            margin: 8px 0 20px;
+        }
+        .ts-title {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: clamp(24px, 2.8vw, 38px);
+            line-height: 1.05;
+            letter-spacing: -0.025em;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+        .ts-title .ital { font-family: var(--editorial); font-style: italic; font-weight: 400; color: var(--ember); }
+        .ts-copy {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--ink-soft);
+            margin-bottom: 22px;
+            max-width: 480px;
+        }
+        .ts-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .ts-tags span {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 11px;
+            border: 1px solid var(--hairline);
+            border-radius: 999px;
+            color: var(--ink-soft);
+        }
+
+        /* Footer progress + count */
+        .timeline-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding-top: 8px;
+        }
+        .tl-count {
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            color: var(--ash);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .tl-count .num {
+            font-family: var(--display);
+            font-variation-settings: "opsz" 144, "SOFT" 30;
+            font-weight: 500;
+            font-size: 18px;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+        }
+        .tl-count .num.cur { color: var(--saffron); }
+        .tl-hint {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ash);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tl-hint .scroll-icon {
+            display: inline-flex;
+            width: 20px; height: 28px;
+            border: 1px solid var(--ash);
+            border-radius: 12px;
+            position: relative;
+            justify-content: center;
+            padding-top: 6px;
+        }
+        .tl-hint .scroll-icon::after {
+            content: '';
+            width: 2px; height: 6px;
+            background: var(--ash);
+            border-radius: 2px;
+            animation: scrollDot 1.6s infinite ease-in-out;
+        }
+        @keyframes scrollDot {
+            0%, 100% { transform: translateY(0); opacity: 1; }
+            50% { transform: translateY(8px); opacity: 0.3; }
+        }
+        .tl-nav { display: flex; gap: 8px; }
+        .tl-nav button {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--hairline);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink);
+            transition: all 0.3s;
+        }
+        .tl-nav button:hover:not(:disabled) { background: var(--ink); color: var(--cream); border-color: var(--ink); transform: scale(1.05); }
+        .tl-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* Mobile: stack instead of sticky */
+        @media (max-width: 768px) {
+            .timeline-sticky { position: relative; height: auto; min-height: 0; padding: 64px 0; }
+            .timeline-container { height: auto; }
+            .track-marker { padding: 4px; }
+            .tm-year { font-size: 10px; }
+        }
+
         /* === WATER RIPPLE === */
         .ripple-drop {
             position: fixed;
@@ -2491,6 +2842,124 @@
                         </div>
                     </div>
                 </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIMELINE — TRAJECTORY -->
+    <section id="trajectory" class="timeline-pinned">
+        <div class="timeline-sticky">
+            <div class="timeline-container">
+                <div class="timeline-head">
+                    <span class="section-no">04 — Our Trajectory</span>
+                    <h2 class="timeline-title">
+                        A decade of <span class="ital">consequential</span> work — chapter & verse.
+                    </h2>
+                </div>
+
+                <div class="timeline-track">
+                    <div class="track-line"></div>
+                    <div class="track-progress" id="tlProgress"></div>
+                    <div class="timeline-markers" id="tlMarkers">
+                        <button class="track-marker" data-idx="0"><span class="tm-year">2014</span><span class="tm-dot"></span></button>
+                        <button class="track-marker" data-idx="1"><span class="tm-year">2017</span><span class="tm-dot"></span></button>
+                        <button class="track-marker" data-idx="2"><span class="tm-year">2019</span><span class="tm-dot"></span></button>
+                        <button class="track-marker" data-idx="3"><span class="tm-year">2022</span><span class="tm-dot"></span></button>
+                        <button class="track-marker" data-idx="4"><span class="tm-year">2024</span><span class="tm-dot"></span></button>
+                        <button class="track-marker" data-idx="5"><span class="tm-year">2026</span><span class="tm-dot"></span></button>
+                    </div>
+                </div>
+
+                <div class="timeline-stage">
+                    <div class="ts-frame">
+                        <div class="ts-imagery" id="tsImagery">
+                            <span class="ts-badge" id="tsBadge">Chapter I · MMXIV</span>
+                            <div class="ts-img active" data-idx="0">
+                                <img src="https://images.unsplash.com/photo-1597211833712-5e41faa202ea?w=1200&h=900&fit=crop&q=80" alt="India Gate, New Delhi" loading="lazy">
+                            </div>
+                            <div class="ts-img" data-idx="1">
+                                <img src="https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=1200&h=900&fit=crop&q=80" alt="Ballot counting" loading="lazy">
+                            </div>
+                            <div class="ts-img" data-idx="2">
+                                <img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=1200&h=900&fit=crop&q=80" alt="World map" loading="lazy">
+                            </div>
+                            <div class="ts-img" data-idx="3">
+                                <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=1200&h=900&fit=crop&q=80" alt="Conference assembly" loading="lazy">
+                            </div>
+                            <div class="ts-img" data-idx="4">
+                                <img src="https://images.unsplash.com/photo-1494173853739-c21f58b16055?w=1200&h=900&fit=crop&q=80" alt="Voting hand" loading="lazy">
+                            </div>
+                            <div class="ts-img" data-idx="5">
+                                <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&h=900&fit=crop&q=80" alt="London skyline" loading="lazy">
+                            </div>
+                        </div>
+
+                        <div class="ts-content" id="tsContent">
+                            <div class="ts-slide active" data-idx="0">
+                                <div class="ts-year">2014</div>
+                                <div class="ts-bar"></div>
+                                <h3 class="ts-title">The Institute is <span class="ital">founded.</span></h3>
+                                <p class="ts-copy">IIPGM is established in New Delhi by a coalition of political strategists, policy thinkers, and election-technology pioneers — with a mandate to advise democratic processes worldwide.</p>
+                                <div class="ts-tags"><span>Foundation</span><span>New Delhi</span><span>Mandate</span></div>
+                            </div>
+                            <div class="ts-slide" data-idx="1">
+                                <div class="ts-year">2017</div>
+                                <div class="ts-bar"></div>
+                                <h3 class="ts-title">First national <span class="ital">mandate.</span></h3>
+                                <p class="ts-copy">The institute's first full national-scale advisory engagement — constituency-level strategy across fourteen states, electoral mathematics formalised as a core practice.</p>
+                                <div class="ts-tags"><span>14 States</span><span>National</span><span>Strategy</span></div>
+                            </div>
+                            <div class="ts-slide" data-idx="2">
+                                <div class="ts-year">2019</div>
+                                <div class="ts-bar"></div>
+                                <h3 class="ts-title">International <span class="ital">engagement</span> begins.</h3>
+                                <p class="ts-copy">IIPGM opens partnerships in Sri Lanka, Kenya, and Brazil — establishing the global advisory practice and the institute's enduring orientation toward the Global South.</p>
+                                <div class="ts-tags"><span>Global</span><span>3 Nations</span><span>Partnership</span></div>
+                            </div>
+                            <div class="ts-slide" data-idx="3">
+                                <div class="ts-year">2022</div>
+                                <div class="ts-bar"></div>
+                                <h3 class="ts-title">Distinguished Faculty <span class="ital">formalised.</span></h3>
+                                <p class="ts-copy">The institute expands its faculty to forty-plus senior specialists from electoral systems, policy research, and statecraft — formally establishing the Distinguished Faculty programme.</p>
+                                <div class="ts-tags"><span>40+ Faculty</span><span>Programme</span></div>
+                            </div>
+                            <div class="ts-slide" data-idx="4">
+                                <div class="ts-year">2024</div>
+                                <div class="ts-bar"></div>
+                                <h3 class="ts-title">Lok Sabha 2024 — the <span class="ital">largest</span> democratic exercise.</h3>
+                                <p class="ts-copy">Strategic advisory engagement during one of the most consequential democratic exercises in human history. Deepens institutional specialisation in electoral mathematics and turnout architecture.</p>
+                                <div class="ts-tags"><span>Lok Sabha</span><span>968 M Voters</span></div>
+                            </div>
+                            <div class="ts-slide" data-idx="5">
+                                <div class="ts-year">2026</div>
+                                <div class="ts-bar"></div>
+                                <h3 class="ts-title">Global <span class="ital">expansion.</span></h3>
+                                <p class="ts-copy">The institute opens its London and Singapore satellite offices — becoming a tri-continental practice and formalising research desks for the European Union and APAC regions.</p>
+                                <div class="ts-tags"><span>London</span><span>Singapore</span><span>Tri-Continental</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-footer">
+                    <div class="tl-count">
+                        <span class="num cur" id="tlCur">01</span>
+                        <span>/</span>
+                        <span class="num" id="tlTotal">06</span>
+                    </div>
+                    <div class="tl-hint">
+                        <span>Scroll to advance</span>
+                        <span class="scroll-icon"></span>
+                    </div>
+                    <div class="tl-nav">
+                        <button id="tlPrev" aria-label="Previous milestone">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 1L3 7l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <button id="tlNext" aria-label="Next milestone">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -3171,6 +3640,109 @@ document.addEventListener('DOMContentLoaded', () => {
         renderContent();
         setInterval(updateTime, 1000);
         startRotate();
+    }
+
+    // === TIMELINE — SCROLL-SCRUBBED TRAJECTORY ===
+    const tlSection = document.getElementById('trajectory');
+    if (tlSection) {
+        const markers = Array.from(tlSection.querySelectorAll('.track-marker'));
+        const slides = Array.from(tlSection.querySelectorAll('.ts-slide'));
+        const images = Array.from(tlSection.querySelectorAll('.ts-img'));
+        const progress = document.getElementById('tlProgress');
+        const cur = document.getElementById('tlCur');
+        const total = document.getElementById('tlTotal');
+        const badge = document.getElementById('tsBadge');
+        const prevBtn = document.getElementById('tlPrev');
+        const nextBtn = document.getElementById('tlNext');
+        const count = markers.length;
+        if (total) total.textContent = String(count).padStart(2, '0');
+        const romans = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+        const years = ['MMXIV', 'MMXVII', 'MMXIX', 'MMXXII', 'MMXXIV', 'MMXXVI'];
+        let currentIdx = -1;
+        const isMobile = () => window.innerWidth <= 768;
+
+        const setActive = (idx) => {
+            idx = Math.max(0, Math.min(count - 1, idx));
+            if (idx === currentIdx) return;
+            currentIdx = idx;
+
+            slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+            images.forEach((im, i) => im.classList.toggle('active', i === idx));
+            markers.forEach((m, i) => {
+                m.classList.toggle('active', i === idx);
+                m.classList.toggle('passed', i < idx);
+            });
+            if (cur) cur.textContent = String(idx + 1).padStart(2, '0');
+            if (badge) badge.textContent = `Chapter ${romans[idx]} · ${years[idx] || ''}`;
+            if (prevBtn) prevBtn.disabled = idx === 0;
+            if (nextBtn) nextBtn.disabled = idx === count - 1;
+            // Track progress fill (positions of markers used since count varies)
+            if (progress && markers.length > 1) {
+                const pct = (idx / (count - 1)) * 100;
+                progress.style.width = pct + '%';
+            }
+        };
+
+        // Set section height for scroll-scrubbing on desktop
+        const PINNED_VH_PER_STEP = 0.9;
+        const layoutSection = () => {
+            if (isMobile()) {
+                tlSection.style.height = 'auto';
+            } else {
+                const vh = window.innerHeight;
+                tlSection.style.height = (vh * (1 + count * PINNED_VH_PER_STEP)) + 'px';
+            }
+        };
+        layoutSection();
+        window.addEventListener('resize', layoutSection);
+
+        // Scroll listener — compute progress within the pinned section
+        const onScroll = () => {
+            if (isMobile()) return;
+            const rect = tlSection.getBoundingClientRect();
+            const vh = window.innerHeight;
+            const range = tlSection.offsetHeight - vh;
+            if (range <= 0) return;
+            const scrolled = Math.max(0, Math.min(-rect.top, range));
+            const p = scrolled / range;
+            const idx = Math.min(count - 1, Math.floor(p * count + 0.0001));
+            setActive(idx);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        // Click year markers — scroll to that milestone's position
+        markers.forEach((m, i) => {
+            m.addEventListener('click', () => {
+                if (isMobile()) { setActive(i); return; }
+                const vh = window.innerHeight;
+                const sliceHeight = vh * PINNED_VH_PER_STEP;
+                const targetTop = tlSection.offsetTop + sliceHeight * i + 4;
+                window.scrollTo({ top: targetTop, behavior: 'smooth' });
+            });
+        });
+
+        // Prev/next buttons
+        const advance = (delta) => {
+            const next = currentIdx + delta;
+            if (next < 0 || next >= count) return;
+            const m = markers[next];
+            m && m.click();
+        };
+        if (prevBtn) prevBtn.addEventListener('click', () => advance(-1));
+        if (nextBtn) nextBtn.addEventListener('click', () => advance(1));
+
+        // Keyboard navigation when section is in view
+        document.addEventListener('keydown', (e) => {
+            const rect = tlSection.getBoundingClientRect();
+            const inView = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
+            if (!inView) return;
+            if (e.key === 'ArrowRight') { e.preventDefault(); advance(1); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); advance(-1); }
+        });
+
+        // Init
+        setActive(0);
     }
 
     // === WATER RIPPLE on non-interactive click ===
